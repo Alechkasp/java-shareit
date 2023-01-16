@@ -64,7 +64,7 @@ public class InMemoryUserRepository implements UserRepository {
             if (userUpdate.getEmail() != null)
                 user.setEmail(userUpdate.getEmail());
             users.put(userId, user);
-            log.info("Пользователь с Id = {} обновлен!", userId);
+            log.info("Пользователь с id = {} обновлен!", userId);
             return UserMapper.toUserDto(user);
         } else {
             log.error("Пользователь не найден!");
@@ -75,7 +75,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public void deleteUserById(Integer userId) {
         users.remove(userId);
-        log.info("Пользователь с Id = {} удален!", userId);
+        log.info("Пользователь удален!");
     }
 
     public static boolean checkUser(Integer userId) {

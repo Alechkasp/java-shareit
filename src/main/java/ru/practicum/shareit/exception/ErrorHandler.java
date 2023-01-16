@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException exception) {
@@ -31,15 +30,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse unavailableExceptionResponse(final UnavailableException exception) {
-        return new ErrorResponse(
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleServerError(final Exception exception) {
-        log.error("Ошибка сервера");
+        log.error("Вещь не может быть добавлена!");
         return new ErrorResponse(
                 exception.getMessage()
         );

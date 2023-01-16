@@ -47,7 +47,7 @@ public class InMemoryItemRepository implements ItemRepository {
             throw new UserNotFoundException("Пользователь не найден!");
         }
         if (item.getAvailable() == null) {
-            log.error("Вещь недоступна!");
+            log.error("Вещь не может быть добавлена!");
             throw new UnavailableException("Вещь не может быть добавлена!");
         }
         id++;
@@ -73,7 +73,7 @@ public class InMemoryItemRepository implements ItemRepository {
             if (itemUpdate.getAvailable() != null)
                 item.setAvailable(itemUpdate.getAvailable());
             items.put(itemId, item);
-            log.info("Вещь с Id = {} обновлена!", itemId);
+            log.info("Вещь с id = {} обновлена!", itemId);
             return ItemMapper.toItemDto(item);
         }
         log.error("Вещь не найдена!");
