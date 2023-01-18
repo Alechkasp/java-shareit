@@ -16,11 +16,11 @@ import java.util.Map;
 @Slf4j
 @Repository
 public class InMemoryUserRepository implements UserRepository {
-    int id = 0;
+    private int id = 0;
     private static final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public UserDto getUserById(Integer userId) {
+    public UserDto getById(Integer userId) {
         if (checkUser(userId)) {
             return UserMapper.toUserDto(users.get(userId));
         } else {
@@ -30,7 +30,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public List<UserDto> getList() {
         List<UserDto> usersDto = new ArrayList<>();
         for (User u : users.values()) {
             usersDto.add(UserMapper.toUserDto(u));
@@ -39,7 +39,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public UserDto createUser(User user) {
+    public UserDto create(User user) {
         if (checkEmail(user)) {
             log.error("Пользователь с таким email уже существует!");
             throw new ValidationException("Пользователь с таким email уже существует!");
@@ -52,18 +52,19 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public UserDto updateUser(Integer userId, User userUpdate) {
+    public UserDto update(Integer userId, User userUpdate) {
         if (checkUser(userId)) {
             User user = users.get(userId);
             if (checkEmail(userUpdate)) {
                 log.error("Такой email уже существует!");
                 throw new ValidationException("Такой email уже существует!");
             }
-            if (userUpdate.getName() != null)
+            if ((userUpdate.getName() != null) && (!userUpdate.getName().isBlank())) {
                 user.setName(userUpdate.getName());
-            if (userUpdate.getEmail() != null)
+            }
+            if ((userUpdate.getEmail() != null) && (!userUpdate.getEmail().isBlank())) {
                 user.setEmail(userUpdate.getEmail());
-            users.put(userId, user);
+            }
             log.info("Пользователь с id = {} обновлен!", userId);
             return UserMapper.toUserDto(user);
         } else {
@@ -73,7 +74,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void deleteUserById(Integer userId) {
+    public void deleteById(Integer userId) {
         users.remove(userId);
         log.info("Пользователь удален!");
     }

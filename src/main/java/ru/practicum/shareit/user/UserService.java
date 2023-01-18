@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -8,31 +8,27 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserDto getById(Integer userId) {
+        return userRepository.getById(userId);
     }
 
-    public UserDto getUserById(Integer userId) {
-        return userRepository.getUserById(userId);
+    public List<UserDto> getList() {
+        return userRepository.getList();
     }
 
-    public List<UserDto> getAllUsers() {
-        return userRepository.getAllUsers();
+    public UserDto create(User user) {
+        return userRepository.create(user);
     }
 
-    public UserDto createUser(User user) {
-        return userRepository.createUser(user);
+    public UserDto update(Integer userId, User userUpdate) {
+        return userRepository.update(userId, userUpdate);
     }
 
-    public UserDto updateUser(Integer userId, User userUpdate) {
-        return userRepository.updateUser(userId, userUpdate);
-    }
-
-    public void deleteUserById(Integer userId) {
-        userRepository.deleteUserById(userId);
+    public void deleteById(Integer userId) {
+        userRepository.deleteById(userId);
     }
 }

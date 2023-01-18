@@ -8,13 +8,13 @@ import java.util.List;
 
 @Component
 public interface UserRepository {
-    UserDto getUserById(Integer userId);
+    UserDto getById(Integer userId);
 
-    List<UserDto> getAllUsers();
+    List<UserDto> getList();
 
-    UserDto createUser(User user);
+    UserDto create(User user);
 
-    UserDto updateUser(Integer userId, User userUpdate);
+    UserDto update(Integer userId, User userUpdate);
 
-    void deleteUserById(Integer userId);
+    void deleteById(Integer userId);
 }

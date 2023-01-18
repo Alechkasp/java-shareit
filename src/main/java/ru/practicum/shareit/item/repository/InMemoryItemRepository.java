@@ -10,19 +10,18 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Repository
 public class InMemoryItemRepository implements ItemRepository {
-    int id = 0;
-    private static final Map<Integer, Item> items = new HashMap<>();
+    private int id = 0;
+    private final Map<Integer, Item> items = new HashMap<>();
+
+    private final Map<Integer, List<Item>> userItemIndex = new LinkedHashMap<>();
 
     @Override
-    public ItemDto getItemById(Integer itemId, Integer userId) {
+    public ItemDto getById(Integer itemId, Integer userId) {
         if (checkItem(itemId)) {
             return ItemMapper.toItemDto(items.get(itemId));
         }
@@ -30,7 +29,7 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public List<ItemDto> getItems(Integer userId) {
+    public List<ItemDto> getList(Integer userId) {
         List<ItemDto> itemsDto = new ArrayList<>();
         for (Item i : items.values()) {
             if (i.getOwner().getId().equals(userId)) {
@@ -41,7 +40,7 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public ItemDto createItem(Item item, Integer userId) {
+    public ItemDto create(Item item, Integer userId) {
         if (!InMemoryUserRepository.checkUser(userId)) {
             log.error("Пользователь не найден!");
             throw new UserNotFoundException("Пользователь не найден!");
@@ -59,17 +58,19 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public ItemDto updateItem(Integer itemId, Integer userId, Item itemUpdate) {
+    public ItemDto update(Integer itemId, Integer userId, Item itemUpdate) {
         if (checkItem(itemId)) {
             Item item = items.get(itemId);
             if (!checkOwner(item, userId)) {
                 log.error("Владелец вещи не найден!");
                 throw new UserNotFoundException("Владелец вещи не найден!");
             }
-            if (itemUpdate.getName() != null)
+            if ((itemUpdate.getName() != null) && (!itemUpdate.getName().isBlank())) {
                 item.setName(itemUpdate.getName());
-            if (itemUpdate.getDescription() != null)
+            }
+            if ((itemUpdate.getDescription() != null) && (!itemUpdate.getDescription().isBlank())) {
                 item.setDescription(itemUpdate.getDescription());
+            }
             if (itemUpdate.getAvailable() != null)
                 item.setAvailable(itemUpdate.getAvailable());
             items.put(itemId, item);
@@ -82,7 +83,7 @@ public class InMemoryItemRepository implements ItemRepository {
 
 
     @Override
-    public List<ItemDto> searchItems(Integer userId, String text) {
+    public List<ItemDto> search(Integer userId, String text) {
         List<ItemDto> foundItems = new ArrayList<>();
         if (!text.isBlank()) {
             String query = text.toLowerCase();
@@ -103,4 +104,6 @@ public class InMemoryItemRepository implements ItemRepository {
     private boolean checkOwner(Item item, Integer userId) {
         return item.getOwner().getId().equals(userId);
     }
+
+
 }

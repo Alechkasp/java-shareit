@@ -8,22 +8,19 @@ import ru.practicum.shareit.user.User;
 
 import javax.validation.constraints.NotBlank;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Item {
-    private Integer id;
+    Integer id;
 
     @NotBlank
-    private String name;
+    String name;
 
     @NotBlank
-    private String description;
+    String description;
 
-    private Boolean available;
-    private User owner;
-    private ItemRequest request;
+    Boolean available;
+    User owner;
+    ItemRequest request;
 }
