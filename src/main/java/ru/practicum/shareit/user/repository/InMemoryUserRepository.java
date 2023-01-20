@@ -13,7 +13,7 @@ import java.util.Optional;
 @Slf4j
 @Repository
 public class InMemoryUserRepository implements UserRepository {
-    private int id = 0;
+    private Integer id = 0;
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
@@ -43,9 +43,8 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User update(User user) {
+    public void update(User user) {
         users.put(user.getId(), user);
-        return user;
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Repository
 public class InMemoryItemRepository implements ItemRepository {
-    private int id = 0;
+    private Integer id = 0;
     private final Map<Integer, Item> items = new HashMap<>();
 
     @Override
@@ -38,7 +38,7 @@ public class InMemoryItemRepository implements ItemRepository {
     public List<Item> getByUserId(Integer userId) {
         return items.values()
                 .stream()
-                .filter(item -> item.getOwner().getId() == userId)
+                .filter(item -> item.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 
