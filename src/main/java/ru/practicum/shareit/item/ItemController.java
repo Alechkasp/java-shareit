@@ -1,7 +1,9 @@
 package ru.practicum.shareit.item;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,56 +12,57 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.CreateItemDto;
+import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-    private final ItemService itemService;
-
+    private final ItemService itemServiceImpl;
     private static final String HEADER = "X-Sharer-User-Id";
 
-    @Autowired
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
-
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Integer itemId, @RequestHeader(HEADER) Integer userId) {
+    public Item getById(@PathVariable Integer itemId) {
         log.info("Получен запрос GET /items/{itemId}");
-        return itemService.getItemById(itemId, userId);
-    }
-
-    @GetMapping
-    public List<ItemDto> getItems(@RequestHeader(HEADER) Integer userId) {
-        log.info("Получен запрос GET /items");
-        return itemService.getItems(userId);
+        return itemServiceImpl.getById(itemId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestHeader(HEADER) Integer userId,
-                                     @RequestParam("text") String text) {
+    public List<Item> search(@RequestParam(required = false) String text) {
         log.info("Получен запрос GET /items/search");
-        return itemService.searchItems(userId, text);
+        return itemServiceImpl.search(text);
     }
+
+    @GetMapping
+    public List<Item> getByUserId(@RequestHeader(HEADER) Integer userId) {
+        log.info("Получен запрос GET /items");
+        return itemServiceImpl.getByUserId(userId);
+    }
+
     @PostMapping
-    public ItemDto createItem(@Valid @RequestBody Item item, @RequestHeader(HEADER) Integer userId) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateItemDto create(@RequestHeader(HEADER) Integer userId,  @Valid @RequestBody CreateItemDto createItemDto) {
         log.debug("Получен запрос POST /items");
-        return itemService.createItem(item, userId);
+        return itemServiceImpl.create(userId, createItemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@Valid @PathVariable Integer itemId, @RequestHeader(HEADER) Integer userId,
-                              @RequestBody Item itemUpdate) {
+    public UpdateItemDto update(@PathVariable Integer itemId, @RequestHeader(HEADER) Integer userId,
+                                @Valid @RequestBody UpdateItemDto updateItemDto) {
         log.debug("Получен запрос PATCH /items/{itemId}");
-        return itemService.updateItem(itemId, userId, itemUpdate);
+        return itemServiceImpl.update(itemId, userId, updateItemDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public Item delete(@PathVariable Integer itemId) {
+        log.debug("Получен запрос DELETE /items/{itemId}");
+        return itemServiceImpl.delete(itemId);
     }
 }

@@ -1,38 +1,63 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.exception.DuplicatedEmailException;
+import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.user.dto.CreateUserDto;
+import ru.practicum.shareit.user.dto.UpdateUserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public User getById(Integer userId) {
+        return userRepository.getById(userId).orElseThrow(
+                () -> new UserNotFoundException("Такого пользователя нет!"));
     }
 
-    public UserDto getUserById(Integer userId) {
-        return userRepository.getUserById(userId);
+    public List<User> getAll() {
+        return userRepository.getAll();
     }
 
-    public List<UserDto> getAllUsers() {
-        return userRepository.getAllUsers();
+    public CreateUserDto create(CreateUserDto createUserDto) {
+        checkEmail(createUserDto.getEmail());
+        User newUser = UserMapper.createUserDtoToUser(createUserDto);
+        userRepository.create(newUser);
+        return UserMapper.createUserDtoFromUser(newUser);
     }
 
-    public UserDto createUser(User user) {
-        return userRepository.createUser(user);
+    public UpdateUserDto update(Integer userId, UpdateUserDto updateUserDto) {
+        User updateUser = userRepository.getById(userId).orElseThrow(
+                () -> new UserNotFoundException("Такого пользователя нет!"));
+
+        if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())) {
+            checkEmail(updateUserDto.getEmail());
+            updateUser.setEmail(updateUserDto.getEmail());
+        }
+
+        if ((updateUserDto.getName() != null) && (!updateUserDto.getName().isBlank())) {
+            updateUser.setName(updateUserDto.getName());
+        }
+
+        userRepository.update(updateUser);
+
+        return UserMapper.updateUserDtoFromUser(updateUser);
     }
 
-    public UserDto updateUser(Integer userId, User userUpdate) {
-        return userRepository.updateUser(userId, userUpdate);
+    public User deleteById(Integer userId) {
+        return userRepository.deleteById(userId).orElseThrow(
+                () -> new UserNotFoundException("Такого пользователя нет!"));
     }
 
-    public void deleteUserById(Integer userId) {
-        userRepository.deleteUserById(userId);
+    private void checkEmail(String email) {
+        userRepository.getByEmail(email).ifPresent(user -> {
+            throw new DuplicatedEmailException("Такой email уже существует!");
+        });
     }
 }
