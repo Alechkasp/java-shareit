@@ -11,6 +11,7 @@ public interface ItemRepository {
     List<Item> getByText(String text);
 
     List<Item> getByUserId(Integer userId);
+
     Item create(Item item);
 
     Item update(Item item);

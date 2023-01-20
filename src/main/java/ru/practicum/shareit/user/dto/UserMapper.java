@@ -18,6 +18,7 @@ public class UserMapper {
                 updateUserDto.getEmail()
         );
     }
+
     public static CreateUserDto createUserDtoFromUser(User createUser) {
         return new CreateUserDto(
                 createUser.getId(),
