@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class User {
-    Integer id;
-    String name;
-    String email;
+    private Integer id;
+    private String name;
+    private String email;
 }

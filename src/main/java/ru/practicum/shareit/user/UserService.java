@@ -36,7 +36,8 @@ public class UserService {
         User updateUser = userRepository.getById(userId).orElseThrow(
                 () -> new UserNotFoundException("Такого пользователя нет!"));
 
-        if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())) {
+        if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())
+                && (!updateUserDto.getEmail().equals(updateUser.getEmail()))) {
             checkEmail(updateUserDto.getEmail());
             updateUser.setEmail(updateUserDto.getEmail());
         }
@@ -44,8 +45,6 @@ public class UserService {
         if ((updateUserDto.getName() != null) && (!updateUserDto.getName().isBlank())) {
             updateUser.setName(updateUserDto.getName());
         }
-
-        userRepository.update(updateUser);
 
         return UserMapper.updateUserDtoFromUser(updateUser);
     }

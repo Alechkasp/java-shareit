@@ -59,7 +59,6 @@ public class ItemService {
         if (updateItemDto.getAvailable() != null) {
             updateItem.setAvailable(updateItemDto.getAvailable());
         }
-        itemRepository.update(updateItem);
 
         return ItemMapper.updateItemDtoFromItem(updateItem);
     }
