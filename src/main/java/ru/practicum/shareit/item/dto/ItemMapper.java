@@ -10,6 +10,8 @@ public class ItemMapper {
                 createItemDto.getDescription(),
                 createItemDto.getAvailable(),
                 null,
+                null,
+                null,
                 null
         );
 
@@ -21,6 +23,8 @@ public class ItemMapper {
                 updateItemDto.getName(),
                 updateItemDto.getDescription(),
                 updateItemDto.getAvailable(),
+                null,
+                null,
                 null,
                 null
         );

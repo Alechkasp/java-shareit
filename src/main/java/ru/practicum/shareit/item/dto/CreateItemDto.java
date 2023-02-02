@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Value
 public class CreateItemDto {
-    Integer id;
+    Long id;
 
     @NotBlank
     String name;

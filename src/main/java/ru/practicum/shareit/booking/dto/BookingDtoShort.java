@@ -6,22 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class BookingDto {
+public class BookingDtoShort {
 
-    @NotNull
-    LocalDateTime start;
+    Long id;
 
-    @NotNull
-    LocalDateTime end;
-
-    @NotNull
-    Long itemId;
+    Long bookerId;
 }

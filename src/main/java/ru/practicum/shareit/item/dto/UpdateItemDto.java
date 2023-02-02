@@ -4,7 +4,7 @@ import lombok.Value;
 
 @Value
 public class UpdateItemDto {
-    Integer id;
+    Long id;
     String name;
     String description;
     Boolean available;
