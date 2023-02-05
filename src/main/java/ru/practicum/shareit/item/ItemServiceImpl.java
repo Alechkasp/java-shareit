@@ -17,13 +17,13 @@ import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,49 +40,42 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
-    public List<Item> getByUserId(Long userId) {
+    public List<ItemDto> getByUserId(Long userId) {
 
-        List<Item> itemList = itemRepository.findAllByOwnerId(userId);
+        return itemRepository.findAllByOwnerId(userId)
+                .stream()
+                .map(item -> {
+                    List<Booking> bookings = bookingRepository.findAllByItemId(item.getId(),
+                            Sort.by(Sort.Direction.DESC, "start"));
+                    Booking nextBooking = getNextBooking(bookings);
+                    Booking lastBooking = getLastBooking(bookings);
+                    item.setNextBooking(nextBooking != null ? BookingMapper.toDtoShort(nextBooking) : null);
+                    item.setLastBooking(lastBooking != null ? BookingMapper.toDtoShort(lastBooking) : null);
+                    item.setComments(
+                            commentRepository.findByItemId(item.getId())
+                                    .stream()
+                                    .map(CommentMapper::toDto)
+                                    .collect(Collectors.toList())
+                    );
 
-        boolean isOwner = true;
-
-        List<Booking> bookingsList = new ArrayList<>();
-
-        for (Item item : itemList) {
-            if (!item.getOwner().getId().equals(userId)) {
-                isOwner = false;
-            }
-            bookingsList.addAll(bookingRepository.findAllByItemId(item.getId(),
-                    Sort.by(Sort.Direction.DESC, "start")));
-        }
-
-        if (!isOwner) {
-            throw new UserNotFoundException("Пользователь не является владельцем вещей");
-        }
-
-        for (Booking b : bookingsList) {
-            for (Item item : itemList) {
-                if (b.getItem().getId().equals(item.getId())) {
-                    item.setNextBooking(BookingMapper.toDtoShort(bookingsList.get(0)));
-                    item.setLastBooking(BookingMapper.toDtoShort(bookingsList.get(1)));
-                }
-            }
-        }
-        return itemList;
+                    return ItemMapper.toDto(item);
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Transactional(readOnly = true)
     @Override
-    public List<Item> search(String text) {
+    public List<ItemDto> search(String text) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.search(text.toLowerCase());
+        return itemRepository.search(text.toLowerCase()).stream().map(ItemMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Item getById(Long itemId, Long userId) {
+    public ItemDto getById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new ItemNotFoundException("Такой вещи нет!"));
 
@@ -97,7 +90,7 @@ public class ItemServiceImpl implements ItemService {
                     Sort.by(Sort.Direction.DESC, "start"));
 
             if (bookings.isEmpty()) {
-                return item;
+                return ItemMapper.toDto(item);
             }
 
             if (bookings.size() > 1) {
@@ -111,24 +104,24 @@ public class ItemServiceImpl implements ItemService {
             }
         }
 
-        return item;
+        return ItemMapper.toDto(item);
     }
 
     @Transactional
     @Override
-    public Item create(Long userId, CreateItemDto itemDto) {
+    public ItemDto create(Long userId, CreateItemDto itemDto) {
         Item item = ItemMapper.createItemDtoToItem(itemDto);
 
         item.setOwner(userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Такого пользователя нет!")));
 
         itemRepository.save(item);
-        return item;
+        return ItemMapper.toDto(item);
     }
 
     @Transactional
     @Override
-    public Item update(Long itemId, Long userId, UpdateItemDto itemDto) {
+    public ItemDto update(Long itemId, Long userId, UpdateItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Такого пользователя нет!"));
 
@@ -151,16 +144,16 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
 
-        return item;
+        return ItemMapper.toDto(item);
     }
 
     @Transactional
     @Override
-    public Item delete(Long itemId) {
+    public ItemDto delete(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new ItemNotFoundException("Такой вещи нет!"));
         itemRepository.deleteById(itemId);
-        return item;
+        return ItemMapper.toDto(item);
     }
 
     @Transactional
@@ -182,5 +175,21 @@ public class ItemServiceImpl implements ItemService {
         } else {
             throw new UnavailableException("Невозможно оставить комментарий");
         }
+    }
+
+    private Booking getNextBooking(List<Booking> bookings) {
+        List<Booking> filteredBookings = bookings.stream()
+                .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                .collect(Collectors.toList());
+
+        return filteredBookings.isEmpty() ? null : filteredBookings.get(0);
+    }
+
+    private Booking getLastBooking(List<Booking> bookings) {
+        List<Booking> filteredBookings = bookings.stream()
+                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                .collect(Collectors.toList());
+
+        return filteredBookings.isEmpty() ? null : filteredBookings.get(filteredBookings.size() - 1);
     }
 }

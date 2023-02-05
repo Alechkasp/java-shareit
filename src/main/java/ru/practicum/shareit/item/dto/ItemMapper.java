@@ -20,35 +20,15 @@ public class ItemMapper {
 
     }
 
-    public static Item updateItemDtoToItem(UpdateItemDto updateItemDto) {
-        return new Item(
-                updateItemDto.getId(),
-                updateItemDto.getName(),
-                updateItemDto.getDescription(),
-                updateItemDto.getAvailable(),
-                null,
-                null,
-                null,
-                null
-        );
-    }
-
-    public static CreateItemDto createItemDtoFromItem(Item createItem) {
-        return new CreateItemDto(
-                createItem.getId(),
-                createItem.getName(),
-                createItem.getDescription(),
-                createItem.getAvailable()
-        );
-
-    }
-
-    public static UpdateItemDto updateItemDtoFromItem(Item updateItem) {
-        return new UpdateItemDto(
-                updateItem.getId(),
-                updateItem.getName(),
-                updateItem.getDescription(),
-                updateItem.getAvailable()
+    public static ItemDto toDto(Item item) {
+        return new ItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getLastBooking(),
+                item.getNextBooking(),
+                item.getComments()
         );
     }
 }

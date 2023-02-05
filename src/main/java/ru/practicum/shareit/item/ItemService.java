@@ -4,23 +4,24 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import java.util.List;
 
 public interface ItemService {
 
-    List<Item> getByUserId(Long userId);
+    List<ItemDto> getByUserId(Long userId);
 
-    List<Item> search(String text);
+    List<ItemDto> search(String text);
 
-    Item getById(Long itemId, Long userId);
+    ItemDto getById(Long itemId, Long userId);
 
-    Item create(Long userId, CreateItemDto itemDto);
+    ItemDto create(Long userId, CreateItemDto itemDto);
 
-    Item update(Long itemId, Long userId, UpdateItemDto itemDto);
+    ItemDto update(Long itemId, Long userId, UpdateItemDto itemDto);
 
-    Item delete(Long itemId);
+    ItemDto delete(Long itemId);
 
     CommentDto createComment(Long itemId, Long userId, CreateCommentDto commentDto);
 }

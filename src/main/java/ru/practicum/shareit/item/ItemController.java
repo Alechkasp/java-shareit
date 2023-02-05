@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import javax.validation.Valid;
@@ -32,27 +33,27 @@ public class ItemController {
     private static final String HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
-    public Item getById(@PathVariable Long itemId,
-                        @RequestHeader(name = HEADER) Long userId) {
+    public ItemDto getById(@PathVariable Long itemId,
+                           @RequestHeader(name = HEADER) Long userId) {
         log.info("Получен запрос GET /items/{itemId}. " + itemId);
         return itemService.getById(itemId, userId);
     }
 
     @GetMapping("/search")
-    public List<Item> search(@RequestParam(required = false) String text) {
+    public List<ItemDto> search(@RequestParam(required = false) String text) {
         log.info("Получен запрос GET /items/search.");
         return itemService.search(text);
     }
 
     @GetMapping
-    public List<Item> getByUserId(@RequestHeader(name = HEADER) Long userId) {
+    public List<ItemDto> getByUserId(@RequestHeader(name = HEADER) Long userId) {
         log.info("Получен запрос GET /items.");
         return itemService.getByUserId(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Item create(@RequestHeader(name = HEADER) Long userId,
+    public ItemDto create(@RequestHeader(name = HEADER) Long userId,
                        @Valid @RequestBody CreateItemDto itemDto) {
         log.info("Получен запрос POST /items.");
         return itemService.create(userId, itemDto);
@@ -67,7 +68,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public Item update(@PathVariable Long itemId,
+    public ItemDto update(@PathVariable Long itemId,
                        @RequestHeader(name = HEADER) Long userId,
                        @Valid @RequestBody UpdateItemDto itemDto) {
         log.debug("Получен запрос PATCH /items/{itemId}. " + itemId);
@@ -75,7 +76,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    public Item delete(@PathVariable Long id) {
+    public ItemDto delete(@PathVariable Long id) {
         log.debug("Получен запрос DELETE /items/{itemId}. " + id);
         return itemService.delete(id);
     }

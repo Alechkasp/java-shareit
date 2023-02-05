@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.dto.CreateBookingDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,21 +29,21 @@ public class BookingController {
     private static final String HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{bookingId}")
-    public Booking getById(@PathVariable Long bookingId,
-                           @RequestHeader(name = HEADER) Long bookerId) {
+    public BookingDto getById(@PathVariable Long bookingId,
+                              @RequestHeader(name = HEADER) Long bookerId) {
         log.info("Получен запрос GET /bookings/{bookingId}. " + bookingId);
         return bookingService.getById(bookingId, bookerId);
     }
 
     @GetMapping("/owner")
-    public List<Booking> getAllByOwner(@RequestHeader(name = HEADER) Long ownerId,
+    public List<BookingDto> getAllByOwner(@RequestHeader(name = HEADER) Long ownerId,
                                        @RequestParam(defaultValue = "ALL") String state) {
         log.info("Получен запрос GET /bookings/owner?state={state}. " + state);
         return bookingService.getAllByOwnerId(ownerId, state);
     }
 
     @GetMapping
-    public List<Booking> getAllByBooker(@RequestHeader(name = HEADER) Long bookerId,
+    public List<BookingDto> getAllByBooker(@RequestHeader(name = HEADER) Long bookerId,
                                         @RequestParam(defaultValue = "ALL") String state) {
         log.info("Получен запрос GET /bookings?state={state}. " + state);
         return bookingService.getAllByBookerId(bookerId, state);
@@ -51,14 +51,14 @@ public class BookingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Booking create(@RequestHeader(name = HEADER) Long userId,
-                          @Valid @RequestBody BookingDto bookingDto) {
+    public BookingDto create(@RequestHeader(name = HEADER) Long userId,
+                          @Valid @RequestBody CreateBookingDto createBookingDto) {
         log.info("Получен запрос POST /bookings");
-        return bookingService.create(bookingDto, userId, bookingDto.getItemId());
+        return bookingService.create(createBookingDto, userId, createBookingDto.getItemId());
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking update(@RequestHeader(name = HEADER) Long userId,
+    public BookingDto update(@RequestHeader(name = HEADER) Long userId,
                           @PathVariable Long bookingId,
                           @RequestParam boolean approved) {
         log.info("Получен запрос PATCH /bookings/{bookingId}. " + bookingId);

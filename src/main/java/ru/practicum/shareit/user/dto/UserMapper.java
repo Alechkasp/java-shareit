@@ -14,27 +14,11 @@ public class UserMapper {
         return user;
     }
 
-    public static User updateUserDtoToUser(UpdateUserDto updateUserDto) {
-        User user = new User();
-        user.setId(updateUserDto.getId());
-        user.setName(updateUserDto.getName());
-        user.setEmail(updateUserDto.getEmail());
-        return user;
-    }
-
-    public static CreateUserDto createUserDtoFromUser(User createUser) {
-        return new CreateUserDto(
-                createUser.getId(),
-                createUser.getName(),
-                createUser.getEmail()
-        );
-    }
-
-    public static UpdateUserDto updateUserDtoFromUser(User updateUser) {
-        return new UpdateUserDto(
-                updateUser.getId(),
-                updateUser.getName(),
-                updateUser.getEmail()
+    public static UserDto toDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
         );
     }
 }
