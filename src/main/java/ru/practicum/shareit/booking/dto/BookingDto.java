@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.shareit.booking.valid.StartBeforeEndDateValid;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -14,14 +17,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@StartBeforeEndDateValid
 public class BookingDto {
 
     @NotNull
-    LocalDateTime start;
+    @FutureOrPresent
+    private LocalDateTime start;
 
     @NotNull
-    LocalDateTime end;
+    @Future
+    private LocalDateTime end;
 
     @NotNull
-    Long itemId;
+    private Long itemId;
 }

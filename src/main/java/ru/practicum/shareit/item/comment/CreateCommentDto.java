@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.comment;
+package ru.practicum.shareit.item.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,5 +12,5 @@ import javax.validation.constraints.NotBlank;
 public class CreateCommentDto {
 
     @NotBlank
-    String text;
+    private String text;
 }

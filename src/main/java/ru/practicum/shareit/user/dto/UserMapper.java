@@ -1,11 +1,10 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
-@Component
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
     public static User createUserDtoToUser(CreateUserDto createUserDto) {
         User user = new User();

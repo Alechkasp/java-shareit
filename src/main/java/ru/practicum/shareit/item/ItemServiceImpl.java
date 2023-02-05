@@ -1,18 +1,20 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.comment.CreateCommentDto;
+import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UnavailableException;
 import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.booking.comment.Comment;
-import ru.practicum.shareit.booking.comment.CommentDto;
-import ru.practicum.shareit.booking.comment.CommentMapper;
-import ru.practicum.shareit.booking.comment.CommentRepository;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentMapper;
+import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -22,6 +24,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentRepository commentRepository;
 
+    @Transactional(readOnly = true)
     public List<Item> getByUserId(Long userId) {
 
         List<Item> itemList = itemRepository.findAllByOwnerId(userId);
@@ -48,7 +52,8 @@ public class ItemServiceImpl implements ItemService {
             if (!item.getOwner().getId().equals(userId)) {
                 isOwner = false;
             }
-            bookingsList.addAll(bookingRepository.findAllByItemIdOrderByStartDesc(item.getId()));
+            bookingsList.addAll(bookingRepository.findAllByItemId(item.getId(),
+                    Sort.by(Sort.Direction.DESC, "start")));
         }
 
         if (!isOwner) {
@@ -66,15 +71,16 @@ public class ItemServiceImpl implements ItemService {
         return itemList;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Item> search(String text) {
         if (text.isBlank()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
-        String query = text.toLowerCase();
-        return itemRepository.search(query);
+        return itemRepository.search(text.toLowerCase());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Item getById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
@@ -87,7 +93,8 @@ public class ItemServiceImpl implements ItemService {
 
         if (item.getOwner().getId().equals(userId)) {
 
-            List<Booking> bookings = bookingRepository.findAllByItemIdOrderByStartDesc(itemId);
+            List<Booking> bookings = bookingRepository.findAllByItemId(itemId,
+                    Sort.by(Sort.Direction.DESC, "start"));
 
             if (bookings.isEmpty()) {
                 return item;
@@ -107,6 +114,7 @@ public class ItemServiceImpl implements ItemService {
         return item;
     }
 
+    @Transactional
     @Override
     public Item create(Long userId, CreateItemDto itemDto) {
         Item item = ItemMapper.createItemDtoToItem(itemDto);
@@ -118,6 +126,7 @@ public class ItemServiceImpl implements ItemService {
         return item;
     }
 
+    @Transactional
     @Override
     public Item update(Long itemId, Long userId, UpdateItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(
@@ -130,11 +139,11 @@ public class ItemServiceImpl implements ItemService {
             throw new UserNotFoundException("Пользователь не является владельцем вещи!");
         }
 
-        if (itemDto.getName() != null) {
+        if ((itemDto.getName() != null) && (!itemDto.getName().isBlank())) {
             item.setName(itemDto.getName());
         }
 
-        if (itemDto.getDescription() != null) {
+        if ((itemDto.getDescription() != null) && (!itemDto.getDescription().isBlank())) {
             item.setDescription(itemDto.getDescription());
         }
 
@@ -142,9 +151,10 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
 
-        return itemRepository.save(item);
+        return item;
     }
 
+    @Transactional
     @Override
     public Item delete(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
@@ -153,6 +163,7 @@ public class ItemServiceImpl implements ItemService {
         return item;
     }
 
+    @Transactional
     @Override
     public CommentDto createComment(Long itemId, Long userId, CreateCommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(

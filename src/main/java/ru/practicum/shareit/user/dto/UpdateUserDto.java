@@ -12,10 +12,10 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 @Builder
 public class UpdateUserDto {
-    Long id;
+    private Long id;
 
-    String name;
+    private String name;
 
     @Email
-    String email;
+    private String email;
 }

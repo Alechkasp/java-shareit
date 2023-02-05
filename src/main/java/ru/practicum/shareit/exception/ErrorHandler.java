@@ -65,15 +65,19 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse unavailableExceptionResponse(final UnavailableException e) {
-        return new ErrorResponse(e.getMessage()
+    public ErrorResponse unavailableExceptionResponse(final UnavailableException exception) {
+        log.error("Ошибка доступности вещи! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse invalidDataExceptionResponse(final InvalidDataException e) {
-        return new ErrorResponse(e.getMessage()
+    public ErrorResponse invalidDataExceptionResponse(final InvalidDataException exception) {
+        log.error("Ошибка даты! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
         );
     }
 

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.comment;
+package ru.practicum.shareit.item.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentDto {
 
-    Long id;
+    private Long id;
 
-    String text;
+    private String text;
 
-    String authorName;
+    private String authorName;
 
-    LocalDateTime created;
+    private LocalDateTime created;
 }

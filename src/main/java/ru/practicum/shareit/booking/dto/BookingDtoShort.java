@@ -13,7 +13,7 @@ import lombok.Setter;
 @Builder
 public class BookingDtoShort {
 
-    Long id;
+    private Long id;
 
-    Long bookerId;
+    private Long bookerId;
 }
