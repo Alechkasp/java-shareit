@@ -20,11 +20,9 @@ import java.time.LocalDateTime;
 @StartBeforeEndDateValid
 public class CreateBookingDto {
 
-    @NotNull
     @FutureOrPresent
     private LocalDateTime start;
 
-    @NotNull
     @Future
     private LocalDateTime end;
 

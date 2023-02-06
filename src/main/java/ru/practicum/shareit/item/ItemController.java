@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import javax.validation.Valid;
@@ -35,7 +36,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable Long itemId,
                            @RequestHeader(name = HEADER) Long userId) {
-        log.info("Получен запрос GET /items/{itemId}. " + itemId);
+        log.info("Получен запрос GET /items/{itemId}. ", itemId);
         return itemService.getById(itemId, userId);
     }
 
@@ -46,7 +47,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getByUserId(@RequestHeader(name = HEADER) Long userId) {
+    public List<ItemDtoResponse> getByUserId(@RequestHeader(name = HEADER) Long userId) {
         log.info("Получен запрос GET /items.");
         return itemService.getByUserId(userId);
     }
@@ -71,13 +72,13 @@ public class ItemController {
     public ItemDto update(@PathVariable Long itemId,
                        @RequestHeader(name = HEADER) Long userId,
                        @Valid @RequestBody UpdateItemDto itemDto) {
-        log.debug("Получен запрос PATCH /items/{itemId}. " + itemId);
+        log.debug("Получен запрос PATCH /items/{itemId}. ", itemId);
         return itemService.update(itemId, userId, itemDto);
     }
 
     @DeleteMapping("/{id}")
     public ItemDto delete(@PathVariable Long id) {
-        log.debug("Получен запрос DELETE /items/{itemId}. " + id);
+        log.debug("Получен запрос DELETE /items/{itemId}. ", id);
         return itemService.delete(id);
     }
 }

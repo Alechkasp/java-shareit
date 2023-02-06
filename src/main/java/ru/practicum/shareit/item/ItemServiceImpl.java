@@ -5,6 +5,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingDtoShortResponse;
+import ru.practicum.shareit.item.comment.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -18,6 +20,7 @@ import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 import ru.practicum.shareit.user.User;
@@ -26,6 +29,8 @@ import ru.practicum.shareit.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -40,27 +45,37 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
-    public List<ItemDto> getByUserId(Long userId) {
+    public List<ItemDtoResponse> getByUserId(Long userId) {
 
-        return itemRepository.findAllByOwnerId(userId)
-                .stream()
-                .map(item -> {
-                    List<Booking> bookings = bookingRepository.findAllByItemId(item.getId(),
-                            Sort.by(Sort.Direction.DESC, "start"));
-                    Booking nextBooking = getNextBooking(bookings);
-                    Booking lastBooking = getLastBooking(bookings);
-                    item.setNextBooking(nextBooking != null ? BookingMapper.toDtoShort(nextBooking) : null);
-                    item.setLastBooking(lastBooking != null ? BookingMapper.toDtoShort(lastBooking) : null);
-                    item.setComments(
-                            commentRepository.findByItemId(item.getId())
-                                    .stream()
-                                    .map(CommentMapper::toDto)
-                                    .collect(Collectors.toList())
-                    );
-
-                    return ItemMapper.toDto(item);
-                })
+        List<ItemDtoResponse> itemsDtoResponse = itemRepository.findAllByOwner(userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("Такого пользователя нет!"))).stream()
+                .map(ItemMapper::toDtoResponse)
                 .collect(Collectors.toList());
+
+        List<Long> idItems = itemsDtoResponse.stream().map(ItemDtoResponse::getId).collect(Collectors.toList());
+
+        Map<Long, BookingDtoShortResponse> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqual(
+                idItems, LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start"))
+                .stream()
+                .map(BookingMapper::toDtoShortResponse)
+                .collect(Collectors.toMap(BookingDtoShortResponse::getItemId, Function.identity()));
+        itemsDtoResponse.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
+
+        Map<Long, BookingDtoShortResponse> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfter(
+                idItems, LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start"))
+                .stream()
+                .map(BookingMapper::toDtoShortResponse)
+                .collect(Collectors.toMap(BookingDtoShortResponse::getItemId, Function.identity()));
+        itemsDtoResponse.forEach(i -> i.setNextBooking(nextBookings.get(i.getId())));
+
+        Map<Long, List<CommentDtoResponse>> comments = commentRepository.findByItemIdIn(
+                        idItems, Sort.by(Sort.Direction.DESC, "created"))
+                .stream()
+                .map(CommentMapper::toDtoResponse)
+                .collect(Collectors.groupingBy(c -> c.getItem().getId()));
+        itemsDtoResponse.forEach(i -> i.setComments(comments.get(i.getId())));
+
+        return itemsDtoResponse;
     }
 
 
@@ -79,30 +94,13 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new ItemNotFoundException("Такой вещи нет!"));
 
-        item.setComments(commentRepository.findByItemId(itemId)
-                .stream()
-                .map(CommentMapper::toDto)
-                .collect(Collectors.toList()));
-
         if (item.getOwner().getId().equals(userId)) {
-
             List<Booking> bookings = bookingRepository.findAllByItemId(itemId,
-                    Sort.by(Sort.Direction.DESC, "start"));
-
-            if (bookings.isEmpty()) {
-                return ItemMapper.toDto(item);
-            }
-
-            if (bookings.size() > 1) {
-                item.setNextBooking(BookingMapper.toDtoShort(bookings.get(0)));
-                item.setLastBooking(BookingMapper.toDtoShort(bookings.get(1)));
-            }
-
-            if (bookings.size() == 1) {
-                item.setNextBooking(BookingMapper.toDtoShort(bookings.get(0)));
-                item.setLastBooking(BookingMapper.toDtoShort(bookings.get(0)));
-            }
+                    Sort.by(Sort.Direction.ASC, "start"));
+            setNextAndLastBooking(bookings, item);
         }
+
+        addComments(item);
 
         return ItemMapper.toDto(item);
     }
@@ -191,5 +189,21 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
 
         return filteredBookings.isEmpty() ? null : filteredBookings.get(filteredBookings.size() - 1);
+    }
+
+    private void setNextAndLastBooking(List<Booking> bookings, Item item) {
+        Booking nextBooking = getNextBooking(bookings);
+        Booking lastBooking = getLastBooking(bookings);
+        item.setNextBooking(nextBooking != null ? BookingMapper.toDtoShort(nextBooking) : null);
+        item.setLastBooking(lastBooking != null ? BookingMapper.toDtoShort(lastBooking) : null);
+    }
+
+    private void addComments(Item item) {
+        item.setComments(
+                commentRepository.findByItemId(item.getId())
+                        .stream()
+                        .map(CommentMapper::toDto)
+                        .collect(Collectors.toList())
+        );
     }
 }

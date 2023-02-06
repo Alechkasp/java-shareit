@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable("id") Long userId) {
-        log.info("Получен запрос GET /users/{id}. " + userId);
+        log.info("Получен запрос GET /users/{id}. ", userId);
         return userService.getById(userId);
     }
 
@@ -48,13 +48,13 @@ public class UserController {
     @PatchMapping("/{id}")
     public UserDto update(@PathVariable("id") Long userId,
                        @Valid @RequestBody UpdateUserDto updateUserDto) {
-        log.info("Получен запрос PATCH /users/{id}. " + userId);
+        log.info("Получен запрос PATCH /users/{id}. ", userId);
         return userService.update(userId, updateUserDto);
     }
 
     @DeleteMapping("/{id}")
     public UserDto deleteById(@PathVariable("id") Long userId) {
-        log.info("Получен запрос DELETE /users/{id}. " + userId);
+        log.info("Получен запрос DELETE /users/{id}. ", userId);
         return userService.deleteById(userId);
     }
 }

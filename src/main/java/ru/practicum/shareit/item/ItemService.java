@@ -5,13 +5,14 @@ import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import java.util.List;
 
 public interface ItemService {
 
-    List<ItemDto> getByUserId(Long userId);
+    List<ItemDtoResponse> getByUserId(Long userId);
 
     List<ItemDto> search(String text);
 

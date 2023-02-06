@@ -31,4 +31,13 @@ public class ItemMapper {
                 item.getComments()
         );
     }
+
+    public static ItemDtoResponse toDtoResponse(Item item) {
+        return ItemDtoResponse.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+    }
 }

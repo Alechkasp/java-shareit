@@ -45,8 +45,7 @@ public class UserServiceImpl implements UserService {
         User updateUser = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Такого пользователя нет!"));
 
-        if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())
-                && (!updateUserDto.getEmail().equals(updateUser.getEmail()))) {
+        if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())) {
             updateUser.setEmail(updateUserDto.getEmail());
         }
 

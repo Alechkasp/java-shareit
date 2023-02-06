@@ -21,22 +21,24 @@ public class BookingMapper {
                 .build();
     }
 
-    public static CreateBookingDto createToDto(Booking booking) {
-        return CreateBookingDto.builder()
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .itemId(booking.getItem().getId())
-                .build();
-    }
-
     public static BookingDto toDto(Booking booking) {
         return BookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
-                .item(booking.getItem())
-                .booker(booking.getBooker())
+                .item(new BookingDto.Item(booking.getItem().getId(), booking.getItem().getName()))
+                .booker(new BookingDto.Booker(booking.getBooker().getId(), booking.getBooker().getName()))
                 .status(booking.getStatus())
+                .build();
+    }
+
+    public static BookingDtoShortResponse toDtoShortResponse(Booking booking) {
+        return BookingDtoShortResponse.builder()
+                .id(booking.getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .itemId(booking.getItem().getId())
+                .bookerId(booking.getBooker().getId())
                 .build();
     }
 }

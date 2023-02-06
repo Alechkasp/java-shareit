@@ -20,4 +20,15 @@ public class CommentMapper {
                 .created(comment.getCreated())
                 .build();
     }
+
+    public static CommentDtoResponse toDtoResponse(Comment comment) {
+        return CommentDtoResponse.builder()
+                .id(comment.getId())
+                .text(comment.getText())
+                .item(new CommentDtoResponse.ItemComment(comment.getItem().getId(), comment.getItem().getName()))
+                .authorName(comment.getAuthor().getName())
+                .authorId(comment.getAuthor().getId())
+                .created(comment.getCreated())
+                .build();
+    }
 }

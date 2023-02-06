@@ -31,21 +31,21 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingDto getById(@PathVariable Long bookingId,
                               @RequestHeader(name = HEADER) Long bookerId) {
-        log.info("Получен запрос GET /bookings/{bookingId}. " + bookingId);
+        log.info("Получен запрос GET /bookings/{bookingId}. ", bookingId);
         return bookingService.getById(bookingId, bookerId);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader(name = HEADER) Long ownerId,
                                        @RequestParam(defaultValue = "ALL") String state) {
-        log.info("Получен запрос GET /bookings/owner?state={state}. " + state);
+        log.info("Получен запрос GET /bookings/owner?state={state}. ", state);
         return bookingService.getAllByOwnerId(ownerId, state);
     }
 
     @GetMapping
     public List<BookingDto> getAllByBooker(@RequestHeader(name = HEADER) Long bookerId,
                                         @RequestParam(defaultValue = "ALL") String state) {
-        log.info("Получен запрос GET /bookings?state={state}. " + state);
+        log.info("Получен запрос GET /bookings?state={state}. ", state);
         return bookingService.getAllByBookerId(bookerId, state);
     }
 
@@ -61,7 +61,7 @@ public class BookingController {
     public BookingDto update(@RequestHeader(name = HEADER) Long userId,
                           @PathVariable Long bookingId,
                           @RequestParam boolean approved) {
-        log.info("Получен запрос PATCH /bookings/{bookingId}. " + bookingId);
+        log.info("Получен запрос PATCH /bookings/{bookingId}. ", bookingId);
         return bookingService.update(userId, bookingId, approved);
     }
 }
