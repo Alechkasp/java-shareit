@@ -36,12 +36,12 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable Long itemId,
                            @RequestHeader(name = HEADER) Long userId) {
-        log.info("Получен запрос GET /items/{itemId}. ", itemId);
+        log.info("Получен запрос GET /items/{}.", itemId);
         return itemService.getById(itemId, userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam(required = false) String text) {
+    public List<ItemDto> search(@RequestParam String text) {
         log.info("Получен запрос GET /items/search.");
         return itemService.search(text);
     }
@@ -72,13 +72,13 @@ public class ItemController {
     public ItemDto update(@PathVariable Long itemId,
                        @RequestHeader(name = HEADER) Long userId,
                        @Valid @RequestBody UpdateItemDto itemDto) {
-        log.debug("Получен запрос PATCH /items/{itemId}. ", itemId);
+        log.debug("Получен запрос PATCH /items/{}.", itemId);
         return itemService.update(itemId, userId, itemDto);
     }
 
     @DeleteMapping("/{id}")
     public ItemDto delete(@PathVariable Long id) {
-        log.debug("Получен запрос DELETE /items/{itemId}. ", id);
+        log.debug("Получен запрос DELETE /items/{}.", id);
         return itemService.delete(id);
     }
 }

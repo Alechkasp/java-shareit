@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoShortResponse;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.comment.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -54,15 +55,15 @@ public class ItemServiceImpl implements ItemService {
 
         List<Long> idItems = itemsDtoResponse.stream().map(ItemDtoResponse::getId).collect(Collectors.toList());
 
-        Map<Long, BookingDtoShortResponse> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqual(
-                idItems, LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start"))
+        Map<Long, BookingDtoShortResponse> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(
+                idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.DESC, "start"))
                 .stream()
                 .map(BookingMapper::toDtoShortResponse)
                 .collect(Collectors.toMap(BookingDtoShortResponse::getItemId, Function.identity()));
         itemsDtoResponse.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
 
-        Map<Long, BookingDtoShortResponse> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfter(
-                idItems, LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start"))
+        Map<Long, BookingDtoShortResponse> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
+                idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
                 .stream()
                 .map(BookingMapper::toDtoShortResponse)
                 .collect(Collectors.toMap(BookingDtoShortResponse::getItemId, Function.identity()));
@@ -95,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
                 () -> new ItemNotFoundException("Такой вещи нет!"));
 
         if (item.getOwner().getId().equals(userId)) {
-            List<Booking> bookings = bookingRepository.findAllByItemId(itemId,
+            List<Booking> bookings = bookingRepository.findAllByItemIdAndStatus(itemId, Status.APPROVED,
                     Sort.by(Sort.Direction.ASC, "start"));
             setNextAndLastBooking(bookings, item);
         }
@@ -185,7 +186,8 @@ public class ItemServiceImpl implements ItemService {
 
     private Booking getLastBooking(List<Booking> bookings) {
         List<Booking> filteredBookings = bookings.stream()
-                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                .filter(booking -> !booking.getStart().isAfter(LocalDateTime.now())
+                        || booking.getEnd().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
 
         return filteredBookings.isEmpty() ? null : filteredBookings.get(filteredBookings.size() - 1);
