@@ -1,70 +1,28 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ItemNotFoundException;
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
 
-@RequiredArgsConstructor
-@Service
-public class ItemService {
-    private final ItemRepository itemRepository;
-    private final UserService userService;
+public interface ItemService {
 
-    public Item getById(Integer itemId) {
-        return itemRepository.getById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет!"));
-    }
+    List<ItemDtoResponse> getByUserId(Long userId);
 
-    public List<Item> search(String text) {
-        return itemRepository.getByText(text);
-    }
+    List<ItemDto> search(String text);
 
-    public List<Item> getByUserId(Integer userId) {
-        return itemRepository.getByUserId(userId);
-    }
+    ItemDto getById(Long itemId, Long userId);
 
-    public CreateItemDto create(Integer userId, CreateItemDto createItemDto) {
-        User user = userService.getById(userId);
-        Item newItem = ItemMapper.createItemDtoToItem(createItemDto);
-        newItem.setOwner(user);
-        itemRepository.create(newItem);
-        return ItemMapper.createItemDtoFromItem(newItem);
-    }
+    ItemDto create(Long userId, CreateItemDto itemDto);
 
-    public UpdateItemDto update(Integer itemId, Integer userId, UpdateItemDto updateItemDto) {
-        User user = userService.getById(userId);
-        Item updateItem = itemRepository.getById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет!"));
+    ItemDto update(Long itemId, Long userId, UpdateItemDto itemDto);
 
-        if (!user.equals(updateItem.getOwner())) {
-            throw new ItemNotFoundException("Такой вещи нет!");
-        }
+    ItemDto delete(Long itemId);
 
-        if (((updateItemDto.getName()) != null) && (!updateItemDto.getName().isBlank())) {
-            updateItem.setName(updateItemDto.getName());
-        }
-
-        if (((updateItemDto.getDescription() != null) && (!updateItemDto.getDescription().isBlank()))) {
-            updateItem.setDescription(updateItemDto.getDescription());
-        }
-
-        if (updateItemDto.getAvailable() != null) {
-            updateItem.setAvailable(updateItemDto.getAvailable());
-        }
-
-        return ItemMapper.updateItemDtoFromItem(updateItem);
-    }
-
-    public Item delete(Integer itemId) {
-        return itemRepository.delete(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет!"));
-    }
+    CommentDto createComment(Long itemId, Long userId, CreateCommentDto commentDto);
 }

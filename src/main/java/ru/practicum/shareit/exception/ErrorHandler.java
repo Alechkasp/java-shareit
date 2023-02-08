@@ -38,6 +38,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException exception) {
+        log.error("Такого бронирования нет! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse duplicatedExceptionHandler(DuplicatedEmailException exception) {
         log.error("Такой email есть! {}", exception.getMessage());
@@ -49,6 +58,24 @@ public class ErrorHandler {
     @ExceptionHandler
     public ErrorResponse handleValidException(final ValidationException exception) {
         log.error("Ошибка валидации! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse unavailableExceptionResponse(final UnavailableException exception) {
+        log.error("Ошибка доступности вещи! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse invalidDataExceptionResponse(final InvalidDataException exception) {
+        log.error("Ошибка даты! {}", exception.getMessage());
         return new ErrorResponse(
                 exception.getMessage()
         );

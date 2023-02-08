@@ -1,37 +1,24 @@
 package ru.practicum.shareit.user.dto;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
     public static User createUserDtoToUser(CreateUserDto createUserDto) {
-        return new User(
-                createUserDto.getId(),
-                createUserDto.getName(),
-                createUserDto.getEmail()
-        );
+        User user = new User();
+        user.setId(createUserDto.getId());
+        user.setName(createUserDto.getName());
+        user.setEmail(createUserDto.getEmail());
+        return user;
     }
 
-    public static User updateUserDtoToUser(UpdateUserDto updateUserDto) {
-        return new User(
-                updateUserDto.getId(),
-                updateUserDto.getName(),
-                updateUserDto.getEmail()
-        );
-    }
-
-    public static CreateUserDto createUserDtoFromUser(User createUser) {
-        return new CreateUserDto(
-                createUser.getId(),
-                createUser.getName(),
-                createUser.getEmail()
-        );
-    }
-
-    public static UpdateUserDto updateUserDtoFromUser(User updateUser) {
-        return new UpdateUserDto(
-                updateUser.getId(),
-                updateUser.getName(),
-                updateUser.getEmail()
+    public static UserDto toDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
         );
     }
 }

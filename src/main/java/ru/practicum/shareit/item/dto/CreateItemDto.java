@@ -7,14 +7,14 @@ import javax.validation.constraints.NotNull;
 
 @Value
 public class CreateItemDto {
-    Integer id;
+    private Long id;
 
     @NotBlank
-    String name;
+    private String name;
 
     @NotBlank
-    String description;
+    private String description;
 
     @NotNull
-    Boolean available;
+    private Boolean available;
 }
