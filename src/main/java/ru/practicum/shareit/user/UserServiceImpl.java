@@ -1,6 +1,9 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.UserNotFoundException;
@@ -20,8 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<UserDto> getAll() {
-        return userRepository.findAll().stream().map(UserMapper::toDto).collect(Collectors.toList());
+    public List<UserDto> getAll(Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        return userRepository.findAll(pageable).stream().map(UserMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

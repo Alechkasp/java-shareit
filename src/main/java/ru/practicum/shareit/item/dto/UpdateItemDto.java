@@ -1,8 +1,16 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Value
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class UpdateItemDto {
     private Long id;
 
@@ -11,4 +19,6 @@ public class UpdateItemDto {
     private String description;
 
     private Boolean available;
+
+    private Long requestId;
 }

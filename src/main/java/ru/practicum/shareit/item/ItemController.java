@@ -23,6 +23,8 @@ import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -41,21 +43,25 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
-        log.info("Получен запрос GET /items/search.");
-        return itemService.search(text);
+    public List<ItemDto> search(@RequestParam String text,
+                                @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                @Positive @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен запрос GET /items/search?from={}&size={}.", from, size);
+        return itemService.search(text, from, size);
     }
 
     @GetMapping
-    public List<ItemDtoResponse> getByUserId(@RequestHeader(name = HEADER) Long userId) {
-        log.info("Получен запрос GET /items.");
-        return itemService.getByUserId(userId);
+    public List<ItemDtoResponse> getByUserId(@RequestHeader(name = HEADER) Long userId,
+                                             @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                             @Positive @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен запрос GET /items?from={}&size={}.", from, size);
+        return itemService.getByUserId(userId, from, size);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(@RequestHeader(name = HEADER) Long userId,
-                       @Valid @RequestBody CreateItemDto itemDto) {
+                          @Valid @RequestBody CreateItemDto itemDto) {
         log.info("Получен запрос POST /items.");
         return itemService.create(userId, itemDto);
     }
@@ -70,8 +76,8 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@PathVariable Long itemId,
-                       @RequestHeader(name = HEADER) Long userId,
-                       @Valid @RequestBody UpdateItemDto itemDto) {
+                          @RequestHeader(name = HEADER) Long userId,
+                          @Valid @RequestBody UpdateItemDto itemDto) {
         log.debug("Получен запрос PATCH /items/{}.", itemId);
         return itemService.update(itemId, userId, itemDto);
     }

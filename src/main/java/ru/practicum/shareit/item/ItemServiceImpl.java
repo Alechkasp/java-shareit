@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoShortResponse;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.item.comment.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -24,6 +27,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -44,13 +48,15 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
 
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional(readOnly = true)
-    public List<ItemDtoResponse> getByUserId(Long userId) {
+    public List<ItemDtoResponse> getByUserId(Long userId, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
 
-        List<ItemDtoResponse> itemsDtoResponse = itemRepository.findAllByOwner(userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет!"))).stream()
-                .map(ItemMapper::toDtoResponse)
+        List<ItemDtoResponse> itemsDtoResponse = itemRepository.findAllByOwner(userRepository.findById(userId)
+                        .orElseThrow(() -> new UserNotFoundException("Такого пользователя нет!")), pageable)
+                .stream().map(ItemMapper::toDtoResponse)
                 .collect(Collectors.toList());
 
         List<Long> idItems = itemsDtoResponse.stream().map(ItemDtoResponse::getId).collect(Collectors.toList());
@@ -79,14 +85,15 @@ public class ItemServiceImpl implements ItemService {
         return itemsDtoResponse;
     }
 
-
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.search(text.toLowerCase()).stream().map(ItemMapper::toDto).collect(Collectors.toList());
+        return itemRepository.search(text.toLowerCase(), pageable).stream()
+                .map(ItemMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -113,6 +120,13 @@ public class ItemServiceImpl implements ItemService {
 
         item.setOwner(userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Такого пользователя нет!")));
+
+        Long requestId = itemDto.getRequestId();
+
+        if (requestId != null) {
+            item.setItemRequest(itemRequestRepository.findById(requestId)
+                    .orElseThrow(() -> new ItemRequestNotFoundException("Такого запроса нет")));
+        }
 
         itemRepository.save(item);
         return ItemMapper.toDto(item);
@@ -186,8 +200,7 @@ public class ItemServiceImpl implements ItemService {
 
     private Booking getLastBooking(List<Booking> bookings) {
         List<Booking> filteredBookings = bookings.stream()
-                .filter(booking -> !booking.getStart().isAfter(LocalDateTime.now())
-                        || booking.getEnd().isBefore(LocalDateTime.now()))
+                .filter(booking -> !booking.getStart().isAfter(LocalDateTime.now()))
                 .collect(Collectors.toList());
 
         return filteredBookings.isEmpty() ? null : filteredBookings.get(filteredBookings.size() - 1);

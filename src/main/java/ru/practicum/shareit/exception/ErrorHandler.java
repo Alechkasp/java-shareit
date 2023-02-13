@@ -47,6 +47,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException exception) {
+        log.error("Такого запроса нет! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse duplicatedExceptionHandler(DuplicatedEmailException exception) {
         log.error("Такой email есть! {}", exception.getMessage());
