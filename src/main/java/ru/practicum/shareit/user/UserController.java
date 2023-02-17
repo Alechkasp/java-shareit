@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @PostMapping()
-    @ResponseStatus(HttpStatus.CREATED)
+    //@ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Valid @RequestBody CreateUserDto createUserDto) {
         log.info("Получен запрос POST /users.");
         return userService.create(createUserDto);
@@ -53,14 +53,14 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public UserDto update(@PathVariable("id") Long userId,
-                       @Valid @RequestBody UpdateUserDto updateUserDto) {
+                          @Valid @RequestBody UpdateUserDto updateUserDto) {
         log.info("Получен запрос PATCH /users/{}.", userId);
         return userService.update(userId, updateUserDto);
     }
 
     @DeleteMapping("/{id}")
-    public UserDto deleteById(@PathVariable("id") Long userId) {
+    public void deleteById(@PathVariable("id") Long userId) {
         log.info("Получен запрос DELETE /users/{}.", userId);
-        return userService.deleteById(userId);
+        userService.deleteById(userId);
     }
 }

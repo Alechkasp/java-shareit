@@ -39,8 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(CreateUserDto createUserDto) {
         User newUser = UserMapper.createUserDtoToUser(createUserDto);
-        userRepository.save(newUser);
-        return UserMapper.toDto(newUser);
+        return UserMapper.toDto(userRepository.save(newUser));
     }
 
     @Transactional
@@ -62,10 +61,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto deleteById(Long userId) {
-        User delUser = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет!"));
+    public void deleteById(Long userId) {
         userRepository.deleteById(userId);
-        return UserMapper.toDto(delUser);
     }
 }

@@ -21,4 +21,20 @@ public class UserMapper {
                 user.getEmail()
         );
     }
+
+    public static UserDto updateUserDtoToUserDto(UpdateUserDto updateUserDto) {
+        UserDto dto = new UserDto();
+        dto.setId(updateUserDto.getId());
+        dto.setName(updateUserDto.getName());
+        dto.setEmail(updateUserDto.getEmail());
+        return dto;
+    }
+
+    public static UserDto createUserDtoToUserDto(CreateUserDto createUserDto) {
+        UserDto dto = new UserDto();
+        dto.setId(createUserDto.getId());
+        dto.setName(createUserDto.getName());
+        dto.setEmail(createUserDto.getEmail());
+        return dto;
+    }
 }
