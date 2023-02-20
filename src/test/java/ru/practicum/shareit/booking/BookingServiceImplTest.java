@@ -178,6 +178,16 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getAllByOwnerId_shouldThrowUnsupportedStatusException() {
+        Long userId = 1L;
+        String state = "BLABLABLA";
+
+        Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
+
+        assertThrows(ValidationException.class, () ->  bookingService.getAllByOwnerId(userId, state, 0, 10));
+    }
+
+    @Test
     void getAllByOwnerId_shouldReturnUserNotFoundException() {
         Long userId = 999L;
         String state = String.valueOf(State.ALL);
@@ -268,6 +278,16 @@ class BookingServiceImplTest {
         List<BookingDto> result = bookingService.getAllByBookerId(userId, state, 0, 10);
 
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void getAllByBooker_shouldThrowUnsupportedStatusException() {
+        Long userId = 1L;
+        String state = "BLABLABLA";
+
+        Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
+
+        assertThrows(ValidationException.class, () ->  bookingService.getAllByBookerId(userId, state, 0, 10));
     }
 
     @Test

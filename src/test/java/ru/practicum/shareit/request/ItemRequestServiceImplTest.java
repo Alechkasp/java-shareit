@@ -78,6 +78,17 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void getAllByRequester_shouldReturnUserNotFoundException() {
+        Long userId = 999L;
+
+        Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
+
+        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getAllByRequester(userId, 0, 10));
+
+        Mockito.verify(itemRequestRepository, Mockito.never()).findAllByUserId(Mockito.anyLong(), Mockito.any());
+    }
+
+    @Test
     void getAll_shouldReturnItemRequestDtoList() {
         Long userId = 1L;
         User user = new User(userId, "Alex", "alex.b@yandex.ru");
