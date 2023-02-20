@@ -83,12 +83,35 @@ class ItemControllerTest {
     @SneakyThrows
     @Test
     void getByUserId_whenRequestParamIsDefault() {
-        long userId = 1;
+        Long userId = 1L;
+
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", userId))
                 .andDo(print())
                 .andExpect(status().isOk());
         Mockito.verify(itemService).getByUserId(userId, 0, 10);
+    }
+
+    @SneakyThrows
+    @Test
+    void getByUserId_whenRequestParamIsNotValid() {
+        Long userId = 1L;
+
+        mockMvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(-1))
+                        .param("size", String.valueOf(1)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+        Mockito.verify(itemService, Mockito.never()).getByUserId(userId, -1, 1);
+
+        mockMvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(1))
+                        .param("size", String.valueOf(-1)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+        Mockito.verify(itemService, Mockito.never()).getByUserId(userId, 1, -1);
     }
 
     @SneakyThrows
@@ -108,6 +131,41 @@ class ItemControllerTest {
 
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
         Mockito.verify(itemService).getById(itemId, userId);
+    }
+
+    @SneakyThrows
+    @Test
+    void getById_whenWithoutUserId_thenReturnedOk() {
+        Long itemId = 1L;
+
+        Mockito.when(itemService.getById(itemId, null)).thenReturn(itemDto);
+
+        String result = mockMvc.perform(get("/items/{itemId}", itemId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals(objectMapper.writeValueAsString(itemDto), result);
+        Mockito.verify(itemService).getById(itemId, null);
+    }
+
+    @SneakyThrows
+    @Test
+    void create_whenUserIsValid_thenReturnedOk() {
+        Mockito.when(itemService.create(Mockito.anyLong(), Mockito.any())).thenReturn(itemDto);
+
+        String result = mockMvc.perform(post("/items")
+                        .header("X-Sharer-User-Id", 1)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(itemDto)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
 
     @SneakyThrows

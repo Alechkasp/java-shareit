@@ -387,4 +387,16 @@ class BookingServiceImplTest {
 
         assertThrows(UserNotFoundException.class, () -> bookingService.update(userId, bookingId, approved));
     }
+
+    @Test
+    void update_whenStatusIsAlreadyREJECTED_thenBadRequestExceptionThrown() {
+        Long userId = 1L;
+        Long bookingId = 1L;
+        boolean approved = true;
+        booking.setStatus(Status.CANCELED);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booking));
+
+        assertThrows(ValidationException.class, () -> bookingService.update(userId, bookingId, approved));
+    }
 }

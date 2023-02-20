@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.exception.DuplicatedEmailException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.CreateUserDto;
@@ -113,6 +114,20 @@ class UserServiceImplTest {
         UserDto actual = userService.update(userId, dto);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void update_shouldThrowDuplicateEmailException() {
+        Long id = 1L;
+        String newEmail = "newEmail@test.test";
+
+        UpdateUserDto dto = new UpdateUserDto(1L, "Alex", newEmail);
+        User user = new User(1L, "Alex", "newEmail@test.test");
+
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByEmail(newEmail)).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> userService.update(id, dto)).isInstanceOf(DuplicatedEmailException.class);
     }
 
     @Test

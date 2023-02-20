@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.DuplicatedEmailException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
                 () -> new UserNotFoundException("Такого пользователя нет!"));
 
         if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())) {
+            checkIfEmailExists(updateUserDto.getEmail());
             updateUser.setEmail(updateUserDto.getEmail());
         }
 
@@ -63,5 +65,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    private void checkIfEmailExists(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            throw new DuplicatedEmailException(email);
+        });
     }
 }

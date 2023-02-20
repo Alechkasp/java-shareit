@@ -7,12 +7,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 @Slf4j
 @RestControllerAdvice
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class ErrorHandler {
     @ExceptionHandler
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
+        log.error("Ошибка валидации! {}", exception.getMessage());
+        return new ErrorResponse(
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    public ErrorResponse handleConstraintViolationException(final ConstraintViolationException exception) {
         log.error("Ошибка валидации! {}", exception.getMessage());
         return new ErrorResponse(
                 exception.getMessage()
