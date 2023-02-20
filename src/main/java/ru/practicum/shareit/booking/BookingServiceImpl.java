@@ -140,20 +140,23 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new BookingNotFoundException("Такого бронирования нет!"));
 
-        if (booking.getStatus().equals(Status.APPROVED)) {
-            throw new UnavailableException("Бронирование уже подтверждено!");
-        }
-
-        if (!itemRepository.findById(booking.getItem().getId()).orElseThrow().getOwner().getId().equals(userId)) {
-            throw new UserNotFoundException("Пользователь не является владельцем вещи");
-        }
-
-        if (approved) {
-            booking.setStatus(Status.APPROVED);
+        if (booking.getItem().getOwner().getId().equals(userId)) {
+            Status status = booking.getStatus();
+            switch (status) {
+                case APPROVED:
+                    throw new ValidationException("Статус 'APPROVED'");
+                case CANCELED:
+                    throw new ValidationException("Статус 'CANCELED'");
+                default:
+                    if (approved) {
+                        booking.setStatus(Status.APPROVED);
+                    } else {
+                        booking.setStatus(Status.REJECTED);
+                    }
+            }
         } else {
-            booking.setStatus(Status.REJECTED);
+            throw new UserNotFoundException("Пользователь не является владельцем Item");
         }
-
         return BookingMapper.toDto(booking);
     }
 

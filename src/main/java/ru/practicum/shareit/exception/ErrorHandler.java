@@ -65,6 +65,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidException(final ValidationException exception) {
         log.error("Ошибка валидации! {}", exception.getMessage());
         return new ErrorResponse(

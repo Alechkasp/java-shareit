@@ -21,7 +21,6 @@ public class ItemMapper {
                 null,
                 null
         );
-
     }
 
     public static ItemDto toDto(Item item) {

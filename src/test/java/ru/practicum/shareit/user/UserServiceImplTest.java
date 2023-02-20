@@ -27,7 +27,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -117,9 +117,10 @@ class UserServiceTest {
 
     @Test
     void delete() {
-        userService.deleteById(1L);
+        User user4 = new User(4L, "Mike", "mike.d@yandex.ru");
 
-        Mockito.verify(userRepository, Mockito.times(1)).deleteById(1L);
+        userService.deleteById(user4.getId());
+
+        Mockito.verify(userRepository, Mockito.times(1)).deleteById(4L);
     }
-
 }

@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 @SpringBootTest(properties = "db.name=test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class UserServiceIntegrationTest {
+class UserServiceImplIntegrationTest {
     private final UserRepository userRepository;
     private final UserServiceImpl userService;
-    Long userId = 1L;
+    private Long userId = 1L;
 
     @BeforeEach
-    private void addUser() {
+    void beforeEach() {
         User user = new User(1L, "Alex", "alex.b@yandex.ru");
         userId = userRepository.save(user).getId();
     }
@@ -55,7 +55,6 @@ class UserServiceIntegrationTest {
         assertEquals("bill.d@yandex.ru", actual.getEmail());
         assertEquals("Bill", actual.getName());
     }
-
 
     @Test
     void update() {
