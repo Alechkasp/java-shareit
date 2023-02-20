@@ -41,18 +41,4 @@ public class BookingMapper {
                 .bookerId(booking.getBooker().getId())
                 .build();
     }
-
-    public static BookingDtoShortResponse toDtoShortResponseFromBookingDtoShort(BookingDtoShort bookingDtoShort) {
-        return BookingDtoShortResponse.builder()
-                .id(bookingDtoShort.getId())
-                .bookerId(bookingDtoShort.getId())
-                .build();
-    }
-
-    public static BookingDtoShort toDtoShortFromDtoShortResponse(BookingDtoShortResponse dtoShortResponse) {
-        return BookingDtoShort.builder()
-                .id(dtoShortResponse.getId())
-                .bookerId(dtoShortResponse.getBookerId())
-                .build();
-    }
 }

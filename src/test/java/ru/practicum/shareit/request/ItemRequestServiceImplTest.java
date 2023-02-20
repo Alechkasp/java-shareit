@@ -6,8 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoShort;
 import ru.practicum.shareit.user.User;
@@ -55,7 +54,7 @@ class ItemRequestServiceImplTest {
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
         ItemRequestDtoShort dtoShort = new ItemRequestDtoShort(1L, "desc", userId, null);
 
-        assertThrows(UserNotFoundException.class, () -> itemRequestService.create(userId, dtoShort));
+        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.create(userId, dtoShort));
 
         Mockito.verify(itemRequestRepository, Mockito.never()).save(Mockito.any());
     }
@@ -103,7 +102,7 @@ class ItemRequestServiceImplTest {
 
         Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> itemRequestService.getAll(userId, 0, 10));
+        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getAll(userId, 0, 10));
 
         Mockito.verify(itemRequestRepository, Mockito.never()).findAllByUserId(Mockito.anyLong(), Mockito.any());
     }
@@ -131,7 +130,7 @@ class ItemRequestServiceImplTest {
 
         Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> itemRequestService.getById(userId, requestId));
+        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getById(userId, requestId));
 
         Mockito.verify(itemRequestRepository, Mockito.never()).findById(Mockito.anyLong());
     }
@@ -144,6 +143,6 @@ class ItemRequestServiceImplTest {
         Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
         Mockito.when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(ItemRequestNotFoundException.class, () -> itemRequestService.getById(userId, requestId));
+        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getById(userId, requestId));
     }
 }

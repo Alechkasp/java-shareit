@@ -17,8 +17,8 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.exception.UnavailableException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
@@ -132,7 +132,7 @@ class ItemServiceImplTest {
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         Long userId = 999L;
 
-        assertThrows(UserNotFoundException.class, () -> itemService.getByUserId(userId, 0, 10));
+        assertThrows(ObjectNotFoundException.class, () -> itemService.getByUserId(userId, 0, 10));
     }
 
     @Test
@@ -154,7 +154,7 @@ class ItemServiceImplTest {
         Long itemId = 999L;
         Long userId = 1L;
 
-        assertThrows(ItemNotFoundException.class, () -> itemService.getById(itemId, userId));
+        assertThrows(ObjectNotFoundException.class, () -> itemService.getById(itemId, userId));
     }
 
     @Test
@@ -207,7 +207,7 @@ class ItemServiceImplTest {
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> itemService.create(userId, createItemDto));
+        assertThrows(ObjectNotFoundException.class, () -> itemService.create(userId, createItemDto));
 
         Mockito.verify(itemRequestRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(itemRepository, Mockito.never()).save(Mockito.any());
@@ -218,10 +218,10 @@ class ItemServiceImplTest {
         Long itemId = 1L;
         Long userId = 999L;
 
-        Mockito.when(userRepository.findById(userId)).thenThrow(UserNotFoundException.class);
+        Mockito.when(userRepository.findById(userId)).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() -> itemService.update(itemId, userId, null))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(ObjectNotFoundException.class);
     }
 
     @Test
@@ -289,11 +289,41 @@ class ItemServiceImplTest {
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> itemService.createComment(itemId, userId, commentDto));
+        assertThrows(ObjectNotFoundException.class, () -> itemService.createComment(itemId, userId, commentDto));
 
         Mockito.verify(itemRepository, Mockito.never()).findById(itemId);
         Mockito.verify(bookingRepository, Mockito.never())
                 .findAllByItemIdAndBookerIdAndEndBefore(itemId, userId, LocalDateTime.now());
+        Mockito.verify(commentRepository, Mockito.never()).save(Mockito.any());
+    }
+
+    @Test
+    void createCommentWithItemNotFound_shouldReturnItemNotFoundException() {
+        Long userId = 1L;
+        Long itemId = 999L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        assertThrows(ObjectNotFoundException.class, () -> itemService.createComment(itemId, userId, commentDto));
+
+        Mockito.verify(bookingRepository, Mockito.never())
+                .findAllByItemIdAndBookerIdAndEndBefore(itemId, userId, LocalDateTime.now());
+        Mockito.verify(commentRepository, Mockito.never()).save(Mockito.any());
+    }
+
+    @Test
+    void createCommentWithBookingNotFound_shouldReturnUnavailableException() {
+        Long userId = 1L;
+        Long itemId = 999L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        Mockito.when(bookingRepository.findAllByItemIdAndBookerIdAndEndBefore(Mockito.anyLong(), Mockito.anyLong(),
+                        Mockito.any())).thenReturn(List.of());
+
+        assertThrows(UnavailableException.class, () -> itemService.createComment(itemId, userId, commentDto));
+
         Mockito.verify(commentRepository, Mockito.never()).save(Mockito.any());
     }
 

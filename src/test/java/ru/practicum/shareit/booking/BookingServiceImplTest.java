@@ -12,9 +12,7 @@ import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.BookingNotFoundException;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
@@ -82,7 +80,7 @@ class BookingServiceImplTest {
 
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booking));
 
-        assertThrows(UserNotFoundException.class, () -> bookingService.getById(bookingId, userId));
+        assertThrows(ObjectNotFoundException.class, () -> bookingService.getById(bookingId, userId));
     }
 
     @Test
@@ -92,7 +90,7 @@ class BookingServiceImplTest {
 
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(BookingNotFoundException.class, () -> bookingService.getById(bookingId, userId));
+        assertThrows(ObjectNotFoundException.class, () -> bookingService.getById(bookingId, userId));
     }
 
     @Test
@@ -186,7 +184,7 @@ class BookingServiceImplTest {
 
         Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () ->  bookingService.getAllByOwnerId(userId, state, 0, 10));
+        assertThrows(ObjectNotFoundException.class, () ->  bookingService.getAllByOwnerId(userId, state, 0, 10));
     }
 
     @Test
@@ -279,7 +277,7 @@ class BookingServiceImplTest {
 
         Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () ->  bookingService.getAllByBookerId(userId, state, 0, 10));
+        assertThrows(ObjectNotFoundException.class, () ->  bookingService.getAllByBookerId(userId, state, 0, 10));
     }
 
     @Test
@@ -305,7 +303,7 @@ class BookingServiceImplTest {
 
         CreateBookingDto dto = new CreateBookingDto(start, end, itemId);
 
-        assertThrows(UserNotFoundException.class, () -> bookingService.create(dto, userId, itemId));
+        assertThrows(ObjectNotFoundException.class, () -> bookingService.create(dto, userId, itemId));
 
         Mockito.verify(bookingRepository, Mockito.never()).save(Mockito.any());
     }
@@ -320,7 +318,7 @@ class BookingServiceImplTest {
 
         CreateBookingDto dto = new CreateBookingDto(start, end, itemId);
 
-        assertThrows(ItemNotFoundException.class, () -> bookingService.create(dto, userId, itemId));
+        assertThrows(ObjectNotFoundException.class, () -> bookingService.create(dto, userId, itemId));
 
         Mockito.verify(bookingRepository, Mockito.never()).save(Mockito.any());
     }
@@ -349,7 +347,7 @@ class BookingServiceImplTest {
         Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.update(bookingId, userId, true))
-                .isInstanceOf(BookingNotFoundException.class);
+                .isInstanceOf(ObjectNotFoundException.class);
     }
 
     @Test
@@ -385,7 +383,7 @@ class BookingServiceImplTest {
 
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booking));
 
-        assertThrows(UserNotFoundException.class, () -> bookingService.update(userId, bookingId, approved));
+        assertThrows(ObjectNotFoundException.class, () -> bookingService.update(userId, bookingId, approved));
     }
 
     @Test

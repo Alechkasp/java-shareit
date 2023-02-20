@@ -9,14 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoShortResponse;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comment.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UnavailableException;
-import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
@@ -55,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
 
         List<ItemDtoResponse> itemsDtoResponse = itemRepository.findAllByOwner(userRepository.findById(userId)
-                        .orElseThrow(() -> new UserNotFoundException("Такого пользователя нет!")), pageable)
+                        .orElseThrow(() -> new ObjectNotFoundException("Такого пользователя нет!")), pageable)
                 .stream().map(ItemMapper::toDtoResponse)
                 .collect(Collectors.toList());
 
@@ -100,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет!"));
+                () -> new ObjectNotFoundException("Такой вещи нет!"));
 
         if (item.getOwner().getId().equals(userId)) {
             List<Booking> bookings = bookingRepository.findAllByItemIdAndStatus(itemId, Status.APPROVED,
@@ -119,13 +117,13 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.createItemDtoToItem(itemDto);
 
         item.setOwner(userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет!")));
+                () -> new ObjectNotFoundException("Такого пользователя нет!")));
 
         Long requestId = itemDto.getRequestId();
 
         if (requestId != null) {
             item.setItemRequest(itemRequestRepository.findById(requestId)
-                    .orElseThrow(() -> new ItemRequestNotFoundException("Такого запроса нет")));
+                    .orElseThrow(() -> new ObjectNotFoundException("Такого запроса нет")));
         }
 
         itemRepository.save(item);
@@ -136,13 +134,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(Long itemId, Long userId, UpdateItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет!"));
+                () -> new ObjectNotFoundException("Такого пользователя нет!"));
 
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет!"));
+                () -> new ObjectNotFoundException("Такой вещи нет!"));
 
         if (!user.equals(item.getOwner())) {
-            throw new UserNotFoundException("Пользователь не является владельцем вещи!");
+            throw new ObjectNotFoundException("Пользователь не является владельцем вещи!");
         }
 
         if ((itemDto.getName() != null) && (!itemDto.getName().isBlank())) {
@@ -164,7 +162,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto delete(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет!"));
+                () -> new ObjectNotFoundException("Такой вещи нет!"));
         itemRepository.deleteById(itemId);
         return ItemMapper.toDto(item);
     }
@@ -173,9 +171,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto createComment(Long itemId, Long userId, CreateCommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет"));
+                () -> new ObjectNotFoundException("Такого пользователя нет"));
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Такой вещи нет"));
+                () -> new ObjectNotFoundException("Такой вещи нет"));
 
         if (!bookingRepository.findAllByItemIdAndBookerIdAndEndBefore(itemId, userId, LocalDateTime.now())
                 .isEmpty()) {

@@ -31,35 +31,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException exception) {
-        log.error("Такого пользователя нет! {}", exception.getMessage());
-        return new ErrorResponse(
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final ItemNotFoundException exception) {
-        log.error("Такой вещи нет! {}", exception.getMessage());
-        return new ErrorResponse(
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException exception) {
-        log.error("Такого бронирования нет! {}", exception.getMessage());
-        return new ErrorResponse(
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException exception) {
-        log.error("Такого запроса нет! {}", exception.getMessage());
+    public ErrorResponse handleObjectNotFoundException(final ObjectNotFoundException exception) {
+        log.error("Такого объекта нет! {}", exception.getMessage());
         return new ErrorResponse(
                 exception.getMessage()
         );
@@ -87,15 +60,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse unavailableExceptionResponse(final UnavailableException exception) {
         log.error("Ошибка доступности вещи! {}", exception.getMessage());
-        return new ErrorResponse(
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse invalidDataExceptionResponse(final InvalidDataException exception) {
-        log.error("Ошибка даты! {}", exception.getMessage());
         return new ErrorResponse(
                 exception.getMessage()
         );

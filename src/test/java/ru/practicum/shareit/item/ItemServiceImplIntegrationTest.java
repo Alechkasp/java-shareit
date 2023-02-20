@@ -10,7 +10,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
@@ -148,7 +148,7 @@ class ItemServiceImplIntegrationTest {
 
         itemService.delete(itemId);
 
-        assertThatThrownBy(() -> itemService.getById(userId, itemId)).isInstanceOf(ItemNotFoundException.class);
+        assertThatThrownBy(() -> itemService.getById(userId, itemId)).isInstanceOf(ObjectNotFoundException.class);
     }
 
     @Test

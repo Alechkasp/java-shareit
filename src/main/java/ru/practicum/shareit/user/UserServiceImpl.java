@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DuplicatedEmailException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getById(Long userId) {
         return UserMapper.toDto(userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет!")));
+                () -> new ObjectNotFoundException("Такого пользователя нет!")));
     }
 
     @Transactional
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(Long userId, UpdateUserDto updateUserDto) {
         User updateUser = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Такого пользователя нет!"));
+                () -> new ObjectNotFoundException("Такого пользователя нет!"));
 
         if ((updateUserDto.getEmail() != null) && (!updateUserDto.getEmail().isBlank())) {
             checkIfEmailExists(updateUserDto.getEmail());

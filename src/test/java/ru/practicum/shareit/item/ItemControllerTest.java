@@ -15,9 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
@@ -304,5 +306,35 @@ class ItemControllerTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(commentDto), result);
+    }
+
+    @SneakyThrows
+    @Test
+    void delete_shouldReturnDeletedItem() {
+        Long id = 1L;
+
+        Mockito.when(itemService.delete(id)).thenReturn(itemDto);
+
+        String result = mockMvc.perform(delete("/items/{id}", id)
+                        .header("X-Sharer-User-Id", 1)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(itemDto)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals(objectMapper.writeValueAsString(itemDto), result);
+    }
+
+    @SneakyThrows
+    @Test
+    void delete_shouldReturnNotFound() {
+        Long id = 1L;
+
+        Mockito.when(itemService.delete(id)).thenThrow(ObjectNotFoundException.class);
+
+        mockMvc.perform(delete("/items/{id}", id))
+                .andExpect(status().isNotFound());
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.exception.DuplicatedEmailException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
@@ -59,7 +59,7 @@ class UserServiceImplTest {
     void getById_shouldReturnUserNotFoundException() {
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.getById(1L)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.getById(1L)).isInstanceOf(ObjectNotFoundException.class);
     }
 
     @Test
@@ -100,7 +100,7 @@ class UserServiceImplTest {
         Mockito.when(userRepository.findById(dto.getId())).thenReturn(Optional.empty());
         Long userId = 999L;
 
-        assertThatThrownBy(() -> userService.update(userId, dto)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.update(userId, dto)).isInstanceOf(ObjectNotFoundException.class);
     }
 
     @Test
