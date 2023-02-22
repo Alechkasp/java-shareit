@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class BookingMapperTest {
-
     private Item item;
     private User user;
     private Booking booking;
@@ -35,7 +34,7 @@ class BookingMapperTest {
     }
 
     @Test
-    void toBooking() {
+    void toBookingFromCreateBookingDto() {
         CreateBookingDto createBookingDto = new CreateBookingDto(start, end, item.getId());
 
         Booking booking = BookingMapper.toBooking(createBookingDto);
@@ -45,7 +44,7 @@ class BookingMapperTest {
     }
 
     @Test
-    void toDtoShort() {
+    void toDtoShortFromBooking() {
         BookingDtoShort dto = BookingMapper.toDtoShort(booking);
 
         assertThat(dto.getId()).isEqualTo(1L);
@@ -53,7 +52,7 @@ class BookingMapperTest {
     }
 
     @Test
-    void toDto() {
+    void toDtoFromBooking() {
         BookingDto dto = BookingMapper.toDto(booking);
 
         BookingDto.Item itemActual = new BookingDto.Item(booking.getItem().getId(), booking.getItem().getName());
@@ -67,8 +66,9 @@ class BookingMapperTest {
         assertThat(dto.getBooker()).isEqualTo(bookerActual);
         assertThat(dto.getStatus()).isEqualTo(booking.getStatus());
     }
+
     @Test
-    void toDtoShortResponse() {
+    void toDtoShortResponseFromBooking() {
         BookingDtoShortResponse dto = BookingMapper.toDtoShortResponse(booking);
 
         assertThat(dto.getId()).isEqualTo(booking.getId());

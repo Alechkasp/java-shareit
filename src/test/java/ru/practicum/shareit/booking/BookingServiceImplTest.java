@@ -60,7 +60,7 @@ class BookingServiceImplTest {
 
     @Nested
     @DisplayName("Tests for the method getById")
-    class getById {
+    class GetById {
         @Test
         void getById_shouldReturnBookingDto() {
             Long bookingId = 1L;
@@ -102,7 +102,7 @@ class BookingServiceImplTest {
 
     @Nested
     @DisplayName("Tests for the method getAllByOwnerId")
-    class getAllByOwnerId {
+    class GetAllByOwnerId {
         @Test
         void getAllByOwnerId_whenStateIsAll() {
             Long userId = 1L;
@@ -210,7 +210,7 @@ class BookingServiceImplTest {
 
     @Nested
     @DisplayName("Tests for the method getAllByBookerId")
-    class getAllByBookerId {
+    class GetAllByBookerId {
         @Test
         void getAllByBookerId_whenStateIsAll() {
             Long userId = 1L;
@@ -317,7 +317,7 @@ class BookingServiceImplTest {
 
     @Nested
     @DisplayName("Tests for the method create")
-    class create {
+    class Create {
         @Test
         void create_shouldSaveBooking() {
             CreateBookingDto dto = new CreateBookingDto(start, end, item.getId());
@@ -380,7 +380,7 @@ class BookingServiceImplTest {
 
     @Nested
     @DisplayName("Tests for the method update")
-    class update {
+    class Update {
         @Test
         void update_shouldThrowNotFoundIfBookingIsNotExists() {
             Long bookingId = 1L;
