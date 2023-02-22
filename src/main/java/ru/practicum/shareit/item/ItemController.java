@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CreateCommentDto;
 import ru.practicum.shareit.item.dto.CreateItemDto;
@@ -33,11 +34,10 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private static final String HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable Long itemId,
-                           @RequestHeader(name = HEADER, required = false) Long userId) {
+                           @RequestHeader(name = Variables.HEADER, required = false) Long userId) {
         log.info("Получен запрос GET /items/{}.", itemId);
         return itemService.getById(itemId, userId);
     }
@@ -51,7 +51,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoResponse> getByUserId(@RequestHeader(name = HEADER) Long userId,
+    public List<ItemDtoResponse> getByUserId(@RequestHeader(name = Variables.HEADER) Long userId,
                                              @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                              @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос GET /items?from={}&size={}.", from, size);
@@ -59,7 +59,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader(name = HEADER) Long userId,
+    public ItemDto create(@RequestHeader(name = Variables.HEADER) Long userId,
                           @Valid @RequestBody CreateItemDto itemDto) {
         log.info("Получен запрос POST /items.");
         return itemService.create(userId, itemDto);
@@ -67,7 +67,7 @@ public class ItemController {
 
     @PostMapping("/{id}/comment")
     public CommentDto createComment(@PathVariable Long id,
-                                    @RequestHeader(name = HEADER) Long userId,
+                                    @RequestHeader(name = Variables.HEADER) Long userId,
                                     @Valid @RequestBody CreateCommentDto commentDto) {
         log.info("Получен запрос POST /items/{id}/comment.");
         return itemService.createComment(id, userId, commentDto);
@@ -75,7 +75,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@PathVariable Long itemId,
-                          @RequestHeader(name = HEADER) Long userId,
+                          @RequestHeader(name = Variables.HEADER) Long userId,
                           @Valid @RequestBody UpdateItemDto itemDto) {
         log.debug("Получен запрос PATCH /items/{}.", itemId);
         return itemService.update(itemId, userId, itemDto);

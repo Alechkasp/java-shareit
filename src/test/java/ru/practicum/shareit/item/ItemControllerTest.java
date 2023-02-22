@@ -19,13 +19,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comment.CommentDto;
-import ru.practicum.shareit.item.comment.CreateCommentDto;
-import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoResponse;
-import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,25 +40,12 @@ class ItemControllerTest {
     private ItemService itemService;
 
     private ItemDto itemDto;
-    private ItemDtoResponse itemDtoResponse;
-    private CreateItemDto createItemDto;
-    private UpdateItemDto updateItemDto;
-    private CreateCommentDto createCommentDto;
     private CommentDto commentDto;
 
     @BeforeEach
     void create() {
         itemDto = new ItemDto(1L, "name", "description", true, null,
                 null, null, 1L);
-
-        itemDtoResponse = new ItemDtoResponse(1L, "name", "description", true, null,
-                null, null);
-
-        createItemDto = new CreateItemDto(1L, "name", "description", true, 1L);
-
-        updateItemDto = new UpdateItemDto(1L, "name", "description", true, 1L);
-
-        createCommentDto = new CreateCommentDto("comment");
 
         commentDto = new CommentDto(1L, "comment", "Alex", LocalDateTime.now());
     }
@@ -74,7 +58,7 @@ class ItemControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .param("from", String.valueOf(from))
                         .param("size", String.valueOf(size)))
                 .andDo(print())
@@ -88,7 +72,7 @@ class ItemControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", userId))
+                        .header(Variables.HEADER, userId))
                 .andDo(print())
                 .andExpect(status().isOk());
         Mockito.verify(itemService).getByUserId(userId, 0, 10);
@@ -100,7 +84,7 @@ class ItemControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .param("from", String.valueOf(-1))
                         .param("size", String.valueOf(1)))
                 .andDo(print())
@@ -108,7 +92,7 @@ class ItemControllerTest {
         Mockito.verify(itemService, Mockito.never()).getByUserId(userId, -1, 1);
 
         mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .param("from", String.valueOf(1))
                         .param("size", String.valueOf(-1)))
                 .andDo(print())
@@ -124,7 +108,7 @@ class ItemControllerTest {
         Mockito.when(itemService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(itemDto);
 
         String result = mockMvc.perform(get("/items/{itemId}", itemId)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(Variables.HEADER, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn()
@@ -159,7 +143,7 @@ class ItemControllerTest {
         Mockito.when(itemService.create(Mockito.anyLong(), Mockito.any())).thenReturn(itemDto);
 
         String result = mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
@@ -176,7 +160,7 @@ class ItemControllerTest {
         Mockito.when(itemService.create(Mockito.anyLong(), Mockito.any())).thenReturn(itemDto);
 
         String result = mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
@@ -194,7 +178,7 @@ class ItemControllerTest {
                 null, null, null, 1L);
 
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
                 .andExpect(status().isBadRequest());
@@ -204,7 +188,7 @@ class ItemControllerTest {
                 null, null, null, -1L);
 
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
                 .andExpect(status().isBadRequest());
@@ -214,7 +198,7 @@ class ItemControllerTest {
                 null, null, null, -1L);
 
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
                 .andExpect(status().isBadRequest());
@@ -224,7 +208,7 @@ class ItemControllerTest {
                 null, null, null, -1L);
 
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
                 .andExpect(status().isBadRequest());
@@ -240,7 +224,7 @@ class ItemControllerTest {
                 .thenReturn(itemDto);
 
         String result = mockMvc.perform(patch("/items/{itemId}", itemId)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
@@ -297,7 +281,7 @@ class ItemControllerTest {
                 .thenReturn(commentDto);
 
         String result = mockMvc.perform(post("/items/{id}/comment", id)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isOk())
@@ -316,7 +300,7 @@ class ItemControllerTest {
         Mockito.when(itemService.delete(id)).thenReturn(itemDto);
 
         String result = mockMvc.perform(delete("/items/{id}", id)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())

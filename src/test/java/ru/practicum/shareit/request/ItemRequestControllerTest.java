@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoShort;
 
@@ -41,7 +42,7 @@ class ItemRequestControllerTest {
         Mockito.when(itemRequestService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(itemRequestDtoLong);
 
         String result = mockMvc.perform(get("/requests/{requestId}", requestId)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(Variables.HEADER, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn()
@@ -64,7 +65,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of(itemRequestDto));
 
         String result = mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .param("from", String.valueOf(from))
                         .param("size", String.valueOf(size)))
                 .andDo(print())
@@ -89,7 +90,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of(itemRequestDto));
 
         String result = mockMvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .param("from", String.valueOf(from))
                         .param("size", String.valueOf(size)))
                 .andDo(print())
@@ -114,7 +115,7 @@ class ItemRequestControllerTest {
         Mockito.when(itemRequestService.create(Mockito.any(), Mockito.any())).thenReturn(dtoShortResponse);
 
         String result = mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(dtoShortRequestShort)))
                 .andExpect(status().isOk())

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,6 @@ import ru.practicum.shareit.item.dto.CreateItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.UpdateItemDto;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -28,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest(
@@ -46,21 +43,13 @@ class ItemServiceImplIntegrationTest {
 
     private final CommentRepository commentRepository;
 
-    private final ItemRequestRepository itemRequestRepository;
-
     private Long itemId;
     private Long userId;
-    private Long requestId;
     private Long commentId;
     private User user;
     private Item item;
     private Comment comment;
     private Booking booking;
-    private ItemRequest itemRequest;
-    private ItemDtoResponse itemDtoResponse;
-    private ItemDto itemDto;
-    private CreateItemDto createItemDto;
-    private UpdateItemDto updateItemDto;
 
     @BeforeEach
     void beforeEach() {
@@ -79,10 +68,6 @@ class ItemServiceImplIntegrationTest {
         comment = new Comment(null, "comment", item, user, LocalDateTime.now());
         comment = commentRepository.save(comment);
         commentId = comment.getId();
-
-        itemRequest = new ItemRequest(null, "description", user, LocalDateTime.now(),null);
-        itemRequest = itemRequestRepository.save(itemRequest);
-        requestId = itemRequest.getId();
     }
 
     @Test
@@ -90,14 +75,14 @@ class ItemServiceImplIntegrationTest {
         Integer from = 0;
         Integer size = 10;
 
-        itemDtoResponse = ItemMapper.toDtoResponse(item);
+        ItemDtoResponse itemDtoResponse = ItemMapper.toDtoResponse(item);
         itemDtoResponse.setComments(List.of(CommentMapper.toDtoResponse(comment)));
         itemDtoResponse.setLastBooking(BookingMapper.toDtoShortResponse(booking));
 
         List<ItemDtoResponse> actualDtoList = itemService.getByUserId(userId, from, size);
         List<ItemDtoResponse> expectedDtoList = List.of(itemDtoResponse);
 
-        assertEquals(expectedDtoList, actualDtoList);
+        Assertions.assertEquals(expectedDtoList, actualDtoList);
     }
 
     @Test
@@ -106,49 +91,47 @@ class ItemServiceImplIntegrationTest {
         Integer size = 10;
         String text = "desc";
 
-        itemDto = ItemMapper.toDto(item);
+        ItemDto itemDto = ItemMapper.toDto(item);
 
         List<ItemDto> actualDtoList = itemService.search(text, from, size);
         List<ItemDto> expectedDtoList = List.of(itemDto);
 
-        assertEquals(expectedDtoList, actualDtoList);
+        Assertions.assertEquals(expectedDtoList, actualDtoList);
     }
 
     @Test
     void getById() {
-        itemDto = ItemMapper.toDto(item);
+        ItemDto itemDto = ItemMapper.toDto(item);
         itemDto.setComments(List.of(CommentMapper.toDto(comment)));
         itemDto.setLastBooking(BookingMapper.toDtoShort(booking));
 
-        ItemDto expectedDto = itemDto;
         ItemDto actualDto = itemService.getById(itemId, userId);
 
-        assertEquals(expectedDto, actualDto);
+        Assertions.assertEquals(itemDto, actualDto);
     }
 
     @Test
     void create() {
-        createItemDto = new CreateItemDto(null, "new", "description",
-                true, requestId);
+        CreateItemDto createItemDto = new CreateItemDto(null, "new", "description",
+                true, null);
 
         ItemDto saveItem = itemService.create(userId, createItemDto);
 
-        assertEquals(itemId + 1, saveItem.getId());
-        assertEquals("new", saveItem.getName());
-        assertEquals("description", saveItem.getDescription());
-        assertEquals(requestId, saveItem.getRequestId());
-        assertEquals(true, saveItem.getAvailable());
+        Assertions.assertEquals(itemId + 1, saveItem.getId());
+        Assertions.assertEquals("new", saveItem.getName());
+        Assertions.assertEquals(true, saveItem.getAvailable());
     }
 
     @Test
     void delete() {
-        Long itemId = 3L;
-        createItemDto = new CreateItemDto(3L, "new", "description",
-                true, requestId);
+        CreateItemDto createItemDto = new CreateItemDto(null, "new", "description",
+                true, null);
+        ItemDto saveItem = itemService.create(userId, createItemDto);
+        Long id = saveItem.getId();
 
-        itemService.delete(itemId);
+        itemService.delete(id);
 
-        assertThatThrownBy(() -> itemService.getById(userId, itemId)).isInstanceOf(ObjectNotFoundException.class);
+        assertThatThrownBy(() -> itemService.getById(id, userId)).isInstanceOf(ObjectNotFoundException.class);
     }
 
     @Test
@@ -156,9 +139,9 @@ class ItemServiceImplIntegrationTest {
         comment = new Comment(null, "comment", item, user, LocalDateTime.now());
         comment = commentRepository.save(comment);
 
-        assertEquals(commentId + 1, comment.getId());
-        assertEquals("comment", comment.getText());
-        assertEquals(item, comment.getItem());
-        assertEquals(user, comment.getAuthor());
+        Assertions.assertEquals(commentId + 1, comment.getId());
+        Assertions.assertEquals("comment", comment.getText());
+        Assertions.assertEquals(item, comment.getItem());
+        Assertions.assertEquals(user, comment.getAuthor());
     }
 }

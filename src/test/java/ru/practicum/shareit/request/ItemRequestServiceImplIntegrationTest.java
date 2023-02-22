@@ -26,22 +26,19 @@ class ItemRequestServiceImplIntegrationTest {
     private final ItemRequestServiceImpl itemRequestService;
     private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
-
-    private User user;
-    private ItemRequest itemRequest;
     private ItemRequestDtoShort itemRequestDtoShort;
     private ItemRequestDto itemRequestDto;
     private Long userId;
     private Long requestId;
-    private LocalDateTime created = LocalDateTime.now();
+    private final LocalDateTime created = LocalDateTime.now();
 
     @BeforeEach
     void beforeEach() {
-        user = new User(null, "Alex", "alex.b@yandex.ru");
+        User user = new User(null, "Alex", "alex.b@yandex.ru");
         user = userRepository.save(user);
         userId = user.getId();
 
-        itemRequest = new ItemRequest(null, "description", user, created, List.of());
+        ItemRequest itemRequest = new ItemRequest(null, "description", user, created, List.of());
         itemRequest = itemRequestRepository.save(itemRequest);
         requestId = itemRequest.getId();
 

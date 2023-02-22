@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 
@@ -28,17 +29,16 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
-    private static final String HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{bookingId}")
     public BookingDto getById(@PathVariable Long bookingId,
-                              @RequestHeader(name = HEADER) Long bookerId) {
+                              @RequestHeader(name = Variables.HEADER) Long bookerId) {
         log.info("Получен запрос GET /bookings/{}.", bookingId);
         return bookingService.getById(bookingId, bookerId);
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getAllByOwner(@RequestHeader(name = HEADER) Long ownerId,
+    public List<BookingDto> getAllByOwner(@RequestHeader(name = Variables.HEADER) Long ownerId,
                                           @RequestParam(defaultValue = "ALL") String state,
                                           @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                           @Positive @RequestParam(defaultValue = "10") Integer size) {
@@ -47,7 +47,7 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingDto> getAllByBooker(@RequestHeader(name = HEADER) Long bookerId,
+    public List<BookingDto> getAllByBooker(@RequestHeader(name = Variables.HEADER) Long bookerId,
                                            @RequestParam(defaultValue = "ALL") String state,
                                            @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                            @Positive @RequestParam(defaultValue = "10") Integer size) {
@@ -56,14 +56,14 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto create(@RequestHeader(name = HEADER) Long userId,
+    public BookingDto create(@RequestHeader(name = Variables.HEADER) Long userId,
                              @Valid @RequestBody CreateBookingDto createBookingDto) {
         log.info("Получен запрос POST /bookings");
         return bookingService.create(createBookingDto, userId, createBookingDto.getItemId());
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto update(@RequestHeader(name = HEADER) Long userId,
+    public BookingDto update(@RequestHeader(name = Variables.HEADER) Long userId,
                              @PathVariable Long bookingId,
                              @RequestParam boolean approved) {
         log.info("Получен запрос PATCH /bookings/{}.", bookingId);

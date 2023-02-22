@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Status;
@@ -32,8 +33,8 @@ class BookingControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private BookingServiceImpl bookingService;
-    private LocalDateTime start = LocalDateTime.now().plusDays(1);
-    private LocalDateTime end = start.plusDays(2);
+    private final LocalDateTime start = LocalDateTime.now().plusDays(1);
+    private final LocalDateTime end = start.plusDays(2);
 
     @SneakyThrows
     @Test
@@ -44,7 +45,7 @@ class BookingControllerTest {
         Mockito.when(bookingService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
 
         String result = mockMvc.perform(get("/bookings/{bookingId}", bookingId)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(Variables.HEADER, 1))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn()
@@ -63,7 +64,7 @@ class BookingControllerTest {
                 Mockito.anyInt())).thenReturn(List.of(bookingDto));
 
         String result = mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .param("state", "ALL")
                         .param("from", String.valueOf(0))
                         .param("size", String.valueOf(10)))
@@ -85,7 +86,7 @@ class BookingControllerTest {
                 Mockito.anyInt())).thenReturn(List.of(bookingDto));
 
         String result = mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(Variables.HEADER, 1)
                         .param("state", "ALL")
                         .param("from", String.valueOf(0))
                         .param("size", String.valueOf(10)))
@@ -110,7 +111,7 @@ class BookingControllerTest {
                 .thenReturn(bookingDto);
 
         String result = mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(createBookingDto)))
                 .andExpect(status().isOk())
@@ -132,7 +133,7 @@ class BookingControllerTest {
         Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(createBookingDto)))
                 .andExpect(status().isBadRequest());
@@ -151,7 +152,7 @@ class BookingControllerTest {
         Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(createBookingDto)))
                 .andExpect(status().isBadRequest());
@@ -170,7 +171,7 @@ class BookingControllerTest {
         Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(createBookingDto)))
                 .andExpect(status().isBadRequest());
@@ -189,7 +190,7 @@ class BookingControllerTest {
         Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(createBookingDto)))
                 .andExpect(status().isBadRequest());
@@ -207,7 +208,7 @@ class BookingControllerTest {
                 .thenReturn(bookingDto);
 
         String result = mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", userId)
+                        .header(Variables.HEADER, userId)
                         .param("approved", String.valueOf(true)))
                 .andExpect(status().isOk())
                 .andReturn()

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoShort;
 
@@ -30,18 +31,16 @@ public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
 
-    private static final String HEADER = "X-Sharer-User-Id";
-
     @GetMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemRequestDto getById(@RequestHeader(name = HEADER) Long userId,
+    public ItemRequestDto getById(@RequestHeader(name = Variables.HEADER) Long userId,
                                   @PathVariable Long requestId) {
         log.info("Получен запрос GET /requests/{}.", requestId);
         return itemRequestService.getById(userId, requestId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAll(@RequestHeader(name = HEADER) Long userId,
+    public List<ItemRequestDto> getAll(@RequestHeader(name = Variables.HEADER) Long userId,
                                        @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                        @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос GET /requests/all?from={}&size={}", from, size);
@@ -49,7 +48,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> getAllByRequester(@RequestHeader(name = HEADER) Long userId,
+    public List<ItemRequestDto> getAllByRequester(@RequestHeader(name = Variables.HEADER) Long userId,
                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос GET /requests");
@@ -57,7 +56,7 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    public ItemRequestDtoShort create(@RequestHeader(name = HEADER) Long userId,
+    public ItemRequestDtoShort create(@RequestHeader(name = Variables.HEADER) Long userId,
                                       @Valid @RequestBody ItemRequestDtoShort itemRequestDto) {
         log.info("Получен запрос POST /requests.");
         return itemRequestService.create(userId, itemRequestDto);
