@@ -4,19 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @EqualsAndHashCode
-public class ItemRequestDto {
+public class ItemRequestDtoShort {
     private Long id;
 
     @NotBlank
@@ -25,6 +25,4 @@ public class ItemRequestDto {
     private Long requesterId;
 
     private LocalDateTime created;
-
-    private List<UpdateItemDto> items;
 }
