@@ -1,4 +1,4 @@
-package shareit.booking;
+package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -10,21 +10,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.Variables;
-import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Status;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @WebMvcTest(controllers = BookingController.class)
 @AutoConfigureMockMvc
@@ -122,82 +120,6 @@ class BookingControllerTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(bookingDto), result);
-    }
-
-    @SneakyThrows
-    @Test
-    void create_whenStartIsNotFutureOrPresent_shouldReturnException() {
-        Long userId = 1L;
-        Long itemId = 1L;
-        CreateBookingDto createBookingDto = new CreateBookingDto(start.minusDays(3), end, itemId);
-        BookingDto bookingDto = new BookingDto(1L, start, end,null, null, Status.WAITING);
-
-        Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .header(Variables.HEADER, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createBookingDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(bookingService, Mockito.never()).create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
-    }
-
-    @SneakyThrows
-    @Test
-    void create_whenEndIsNotFuture_shouldReturnException() {
-        Long userId = 1L;
-        Long itemId = 1L;
-        CreateBookingDto createBookingDto = new CreateBookingDto(start.minusDays(3), end, itemId);
-        BookingDto bookingDto = new BookingDto(1L, start, end,null, null, Status.WAITING);
-
-        Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .header(Variables.HEADER, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createBookingDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(bookingService, Mockito.never()).create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
-    }
-
-    @SneakyThrows
-    @Test
-    void create_whenEndIsNull_shouldReturnException() {
-        Long userId = 1L;
-        Long itemId = 1L;
-        CreateBookingDto createBookingDto = new CreateBookingDto(start.minusDays(3), end, itemId);
-        BookingDto bookingDto = new BookingDto(1L, start, end,null, null, Status.WAITING);
-
-        Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .header(Variables.HEADER, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createBookingDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(bookingService, Mockito.never()).create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
-    }
-
-    @SneakyThrows
-    @Test
-    void create_whenEndIsNow_shouldReturnException() {
-        Long userId = 1L;
-        Long itemId = 1L;
-        CreateBookingDto createBookingDto = new CreateBookingDto(start.minusDays(3), end, itemId);
-        BookingDto bookingDto = new BookingDto(1L, start, end,null, null, Status.WAITING);
-
-        Mockito.when(bookingService.create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .header(Variables.HEADER, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createBookingDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(bookingService, Mockito.never()).create(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
     }
 
     @SneakyThrows

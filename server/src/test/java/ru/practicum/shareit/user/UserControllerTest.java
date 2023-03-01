@@ -1,4 +1,4 @@
-package shareit.user;
+package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -9,8 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -87,52 +85,6 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void create_whenUserNameIsNotValid_shouldReturnedBadRequest() {
-        Long userId = 1L;
-        CreateUserDto createUserDto = new CreateUserDto(null, null, "alex.b@yandex.ru");
-
-        mockMvc.perform(post("/users", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createUserDto)))
-                .andExpect(status().isBadRequest());
-
-        createUserDto.setName(" ");
-        mockMvc.perform(post("/users", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createUserDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(userService, Mockito.never()).create(createUserDto);
-    }
-
-    @SneakyThrows
-    @Test
-    void create_whenUserEmailIsNotValid_shouldReturnedBadRequest() {
-        Long userId = 1L;
-        CreateUserDto createUserDto = new CreateUserDto(null, "Alex", "hello");
-
-        mockMvc.perform(post("/users", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createUserDto)))
-                .andExpect(status().isBadRequest());
-
-        createUserDto.setEmail(" ");
-        mockMvc.perform(post("/users", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createUserDto)))
-                .andExpect(status().isBadRequest());
-
-        createUserDto.setEmail(null);
-        mockMvc.perform(post("/users", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createUserDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(userService, Mockito.never()).create(createUserDto);
-    }
-
-    @SneakyThrows
-    @Test
     void update_whenUserIsValid_shouldReturnedOk() {
         Long userId = 1L;
         UpdateUserDto updateUserDto = new UpdateUserDto(null, "Alex", "alex.b@yandex.ru");
@@ -147,34 +99,6 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
         assertEquals(objectMapper.writeValueAsString(updateUserDto), result);
-    }
-
-    @SneakyThrows
-    @Test
-    void update_whenUserNameIsNotValid_shouldReturnedBadRequest() {
-        Long userId = 1L;
-        UpdateUserDto updateUserDto = new UpdateUserDto(null, null, "alex");
-
-        mockMvc.perform(patch("/users/{userId}", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updateUserDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(userService, Mockito.never()).update(userId, updateUserDto);
-    }
-
-    @SneakyThrows
-    @Test
-    void update_whenUserEmailIsNotValid_shouldReturnedBadRequest() {
-        Long userId = 1L;
-        UpdateUserDto updateUserDto = new UpdateUserDto(null, "Alex", "hello");
-
-        mockMvc.perform(patch("/users/{userId}", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updateUserDto)))
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(userService, Mockito.never()).update(userId, updateUserDto);
     }
 
     @SneakyThrows

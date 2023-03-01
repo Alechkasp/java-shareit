@@ -1,4 +1,4 @@
-package shareit.booking;
+package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,8 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -331,8 +329,6 @@ class BookingServiceImplTest {
 
             BookingDto bookingdto = bookingService.create(dto, user2.getId(), item.getId());
 
-            /*assertThatThrownBy(() -> bookingService.create(dto, user2.getId(), item.getId()))
-                    .isInstanceOf(ObjectNotFoundException.class);*/
             assertThat(bookingdto).hasFieldOrProperty("id");
         }
 

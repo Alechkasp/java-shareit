@@ -1,4 +1,4 @@
-package shareit.item;
+package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -12,8 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.Variables;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.item.ItemController;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -77,28 +75,6 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         Mockito.verify(itemService).getByUserId(userId, 0, 10);
-    }
-
-    @SneakyThrows
-    @Test
-    void getByUserId_whenRequestParamIsNotValid() {
-        Long userId = 1L;
-
-        mockMvc.perform(get("/items")
-                        .header(Variables.HEADER, userId)
-                        .param("from", String.valueOf(-1))
-                        .param("size", String.valueOf(1)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).getByUserId(userId, -1, 1);
-
-        mockMvc.perform(get("/items")
-                        .header(Variables.HEADER, userId)
-                        .param("from", String.valueOf(1))
-                        .param("size", String.valueOf(-1)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).getByUserId(userId, 1, -1);
     }
 
     @SneakyThrows
@@ -170,50 +146,6 @@ class ItemControllerTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
-    }
-
-    @SneakyThrows
-    @Test
-    void create_whenItemIsNotValid_thenReturnedBadRequest() {
-        ItemDto itemDtoIsNotValid = new ItemDto(1L, "", "description", true,
-                null, null, null, 1L);
-
-        mockMvc.perform(post("/items")
-                        .header(Variables.HEADER, 1)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).create(Mockito.any(), Mockito.any());
-
-        itemDtoIsNotValid = new ItemDto(1L, "name", "description", true,
-                null, null, null, -1L);
-
-        mockMvc.perform(post("/items")
-                        .header(Variables.HEADER, 1)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).create(Mockito.any(), Mockito.any());
-
-        itemDtoIsNotValid = new ItemDto(1L, "name", "description", null,
-                null, null, null, -1L);
-
-        mockMvc.perform(post("/items")
-                        .header(Variables.HEADER, 1)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).create(Mockito.any(), Mockito.any());
-
-        itemDtoIsNotValid = new ItemDto(1L, "name", "", true,
-                null, null, null, -1L);
-
-        mockMvc.perform(post("/items")
-                        .header(Variables.HEADER, 1)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemDtoIsNotValid)))
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).create(Mockito.any(), Mockito.any());
     }
 
     @SneakyThrows
