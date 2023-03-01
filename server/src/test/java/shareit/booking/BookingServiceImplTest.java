@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -25,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -328,6 +331,8 @@ class BookingServiceImplTest {
 
             BookingDto bookingdto = bookingService.create(dto, user2.getId(), item.getId());
 
+            /*assertThatThrownBy(() -> bookingService.create(dto, user2.getId(), item.getId()))
+                    .isInstanceOf(ObjectNotFoundException.class);*/
             assertThat(bookingdto).hasFieldOrProperty("id");
         }
 

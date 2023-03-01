@@ -50,7 +50,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> create(Long userId, CreateBookingDto dto) {
-        return post("", userId, dto);
+        return post("/", userId, dto);
     }
 
     public ResponseEntity<Object> update(Long userId, Long bookingId, boolean approved) {

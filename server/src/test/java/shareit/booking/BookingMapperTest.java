@@ -14,6 +14,8 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 class BookingMapperTest {
     private Item item;
     private User user;

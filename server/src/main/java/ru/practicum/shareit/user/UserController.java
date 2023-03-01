@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,22 +15,18 @@ import ru.practicum.shareit.user.dto.CreateUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping(path = "/users")
 public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public List<UserDto> getAll(@PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                @Positive @RequestParam(defaultValue = "10") Integer size) {
+    public List<UserDto> getAll(@RequestParam(defaultValue = "0") Integer from,
+                                @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос GET /users.");
         return userService.getAll(from, size);
     }
@@ -43,14 +38,14 @@ public class UserController {
     }
 
     @PostMapping()
-    public UserDto create(@Valid @RequestBody CreateUserDto createUserDto) {
+    public UserDto create(@RequestBody CreateUserDto createUserDto) {
         log.info("Получен запрос POST /users.");
         return userService.create(createUserDto);
     }
 
     @PatchMapping("/{id}")
     public UserDto update(@PathVariable("id") Long userId,
-                          @Valid @RequestBody UpdateUserDto updateUserDto) {
+                          @RequestBody UpdateUserDto updateUserDto) {
         log.info("Получен запрос PATCH /users/{}.", userId);
         return userService.update(userId, updateUserDto);
     }

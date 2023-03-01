@@ -29,7 +29,10 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAll(Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of("from", from, "size", size);
+        Map<String, Object> parameters = Map.of(
+                "from", from,
+                "size", size
+        );
         return get("?from={from}&size={size}",  null, parameters);
     }
 
