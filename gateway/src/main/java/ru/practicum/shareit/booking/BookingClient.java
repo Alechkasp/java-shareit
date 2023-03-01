@@ -12,10 +12,10 @@ import ru.practicum.shareit.client.BaseClient;
 
 import java.util.Map;
 
-import static ru.practicum.shareit.Variables.API_PREFIX;
-
 @Service
 public class BookingClient extends BaseClient {
+
+    public static final String API_PREFIX = "/bookings";
 
     @Autowired
     public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -27,7 +27,7 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getById(Long userId, Long bookingId) {
+    public ResponseEntity<Object> getById(Long bookingId, Long userId) {
         return get("/" + bookingId, userId);
     }
 

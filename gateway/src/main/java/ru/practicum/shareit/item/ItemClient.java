@@ -14,10 +14,10 @@ import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import java.util.Map;
 
-import static ru.practicum.shareit.Variables.API_PREFIX;
-
 @Service
 public class ItemClient extends BaseClient {
+
+    public static final String API_PREFIX = "/items";
 
     @Autowired
     public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -58,7 +58,7 @@ public class ItemClient extends BaseClient {
         return post("/" + itemId + "/comment", userId, commentDto);
     }
 
-    public ResponseEntity<Object> update(Long userId, Long itemId, UpdateItemDto itemDto) {
+    public ResponseEntity<Object> update(Long itemId, Long userId, UpdateItemDto itemDto) {
         return patch("/" + itemId, userId, itemDto);
     }
 

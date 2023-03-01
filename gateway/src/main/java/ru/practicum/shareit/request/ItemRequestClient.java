@@ -11,10 +11,10 @@ import ru.practicum.shareit.client.BaseClient;
 
 import java.util.Map;
 
-import static ru.practicum.shareit.Variables.API_PREFIX;
-
 @Service
 public class ItemRequestClient extends BaseClient {
+
+    public static final String API_PREFIX = "/requests";
 
     @Autowired
     public ItemRequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {

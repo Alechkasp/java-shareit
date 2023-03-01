@@ -13,10 +13,10 @@ import ru.practicum.shareit.user.dto.UpdateUserDto;
 
 import java.util.Map;
 
-import static ru.practicum.shareit.Variables.API_PREFIX;
-
 @Service
 public class UserClient extends BaseClient {
+
+    public static final String API_PREFIX = "/users";
 
     @Autowired
     public UserClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
